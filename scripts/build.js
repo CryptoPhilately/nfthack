@@ -49,7 +49,7 @@ function buildCSS () {
 }
 
 function copyStatic () {
-  return copy(paths.static.entry, paths.static.out)
+  return copy(paths.static.entry, paths.static.out).catch(err=>{})
 }
 
 function copyHtml () {

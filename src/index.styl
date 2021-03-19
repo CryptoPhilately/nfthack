@@ -1,3 +1,5 @@
+@import '/src/view/login/login.styl'
+
 bgcolor = #e6f5ff
 
 a {
@@ -65,8 +67,11 @@ body.loading::after {
 }
 
 
-
 header {
+  height: 60px;
+  position: fixed; z-index: 5; top:0; width:100%;
+  .content { position: relative;}
+
   background-color #e6f5ff77
   backdrop-filter: blur(10px) saturate(200%);
   -webkit-backdrop-filter: blur(10px) saturate(200%);
@@ -76,10 +81,29 @@ header {
     push-btn()
     display: inline-block
     text-decoration none
+
+    img {
+      float left
+      width 40px;
+      margin 0 5px 0 5px
+    }
+
     line-height 40px
     font-size 18px
 
     color: #000
     font-weight 200
+    strong {
+      font-weight 800
+      font-size 19px
+      letter-spacing -3px
+      color: #656bc5;
+    }
+    &:hover {
+      filter:saturate(2)
+    }
+    @media (max-width: 620px){
+      span { display:none; }
+    }
   }
 }
