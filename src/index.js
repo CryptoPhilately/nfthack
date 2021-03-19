@@ -1,6 +1,6 @@
 
 import User from './User'
-
+import './view/main.component'
 window.App = { User } // for debug only
 
 document.addEventListener('DOMContentLoaded', async () => {
