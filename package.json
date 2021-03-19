@@ -2,7 +2,7 @@
   "name": "nfthack",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./scripts/build.js",
   "scripts": {
     "start": "npm run dev",
     "dev": "NODE_ENV=development node scripts/dev.js",
