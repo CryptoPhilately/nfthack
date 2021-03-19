@@ -1,0 +1,32 @@
+{
+  "name": "nfthack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/parser": "^4.16.1",
+    "eslint": "^7.21.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CryptoPhilately/nfthack.git"
+  },
+  "keywords": [
+    "ethereum",
+    "nft"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CryptoPhilately/nfthack/issues"
+  },
+  "homepage": "https://github.com/CryptoPhilately/nfthack#readme"
+}
