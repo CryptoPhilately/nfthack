@@ -25,6 +25,9 @@
     "lint": "npm run lint:ts",
     "lint:ts": "eslint --ext=.ts, ./src",
     "lint:ts:fix": "eslint --fix --ext=.ts ./src",
+    "testnet": "npx ganache-cli -d -l 12000000",
+    "migrate": "npx truffle migrate",
+    "test:truffle": "npx truffle test",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "dependencies": {
