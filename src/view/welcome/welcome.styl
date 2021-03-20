@@ -1,0 +1,40 @@
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(248,156,54, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(248,156,54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(248,156,54, 0); }
+}
+
+welcome-screen {
+  display block
+  text-align: center;
+
+  p {
+    margin: 120px 20px 40px 20px;
+  }
+
+  button {
+    border:none; outline:none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    background: #f89c36;
+    letter-spacing: -.24px;
+    font-size: 14px;
+    font-weight: 500;
+    font-style: normal;
+    padding:0 0 2px 0;
+    &:hover {
+      opacity: 0.95;
+    }
+
+    push-btn()
+
+    width: 280px; height: 44px;
+    font-size: 17px;
+    line-height:21px;
+    letter-spacing: -.013em;
+    box-shadow: 0 0 0 rgba(248,156,54, 0.4);
+    animation: pulse 2s infinite;
+  }
+
+}

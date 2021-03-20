@@ -1,0 +1,19 @@
+{
+    "name": "NFT Stamp Collecting",
+    "short_name": "NFT Stamp Collecting",
+    "icons": [
+        {
+            "src": "/assets/meta/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/meta/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#e6f5ff",
+    "background_color": "#e6f5ff",
+    "display": "standalone"
+}

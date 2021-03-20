@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "baseUrl": "src", // This must be specified if "paths" is.
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "paths": {
+        "@config/*": ["config/*"],
+        "@model/*": ["model/*"],
+        "@view/*": ["view/*"]
+    },
+  }
+}
