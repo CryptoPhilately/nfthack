@@ -11,7 +11,7 @@ const Router = new VaillaRouter({
 
 Router.start = function (mountpoint, routes) {
   routes.forEach(function (route) {
-    Router.add(route.path, async function () {
+    Router.add(route.path, async function (param) {
       // redirect to main if route need wallet, and wallet not connected
       if (route.auth && !User.isConnected()) return Router.navigateTo('/')
 
@@ -19,7 +19,12 @@ Router.start = function (mountpoint, routes) {
       if (route.auth) await User.ready()
 
       // render page html
-      mountpoint.innerHTML = route.html
+      if (typeof route.html === 'string') {
+        mountpoint.innerHTML = route.html
+      }
+      if (typeof route.html === 'function') {
+        mountpoint.innerHTML = route.html(param)
+      }
     })
   })
 

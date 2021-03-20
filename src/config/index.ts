@@ -15,11 +15,11 @@ export default {
   contracts: {
     collections: {
       address: {
-        mainnet: '',
-        kovan: '',
-        ropsten: '',
-        rinkeby: '',
-        goerli: '',
+        // mainnet: '',
+        // kovan: '',
+        // ropsten: '',
+        rinkeby: '0xa84Fdc5a9b1C99c0a61b7bEbBee36Ff054380b06',
+        // goerli: '',
         localhost: ColletionsLocalAddress
       },
       abi: collectionsABI

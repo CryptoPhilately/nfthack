@@ -2,12 +2,22 @@
 import { html, render } from 'lit-html'
 import User from '@model/User'
 import IPFS from '@model/IPFS'
+import Router from '@view/Router'
 
 customElements.define('stamps-list', class extends HTMLElement {
   async connectedCallback () {
-    // const listHtml = document.getElementById('stamps_list').content.cloneNode(true)
     const groups = await User.DB.groups.toArray()
+    const groupsbyId = groups.reduce((obj, item) => {
+      obj[item.id] = item
+      return obj
+    }, {})
     const stamps = await User.DB.stamps.toArray()
+
+    const goTo = function (e) {
+      if (e.target.tagName.toLowerCase() === 'a') return
+
+      Router.navigateTo(this.dataset.link)
+    }
 
     const stampsTables = (groupsList, stampsList) => html`
       <div class="groups-list">
@@ -16,27 +26,29 @@ customElements.define('stamps-list', class extends HTMLElement {
           <caption>Collections</caption>
           <thead>
             <tr>
+              <th>Status</th>
               <th>Ticker</th>
+              <th>Name</th>
               <th>Denomination</th>
               <th>Stamps</th>
-              <th>Name</th>
-              <th>Status</th>
+              <th>URI</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             ${groupsList.length
             ? html`${groupsList.map(group => html`
-                <tr class="item">
+                <tr class="item" data-link="/stamps/collection/${group.id}" @click=${goTo}>
+                  <td><i class="status ${group.status}">${group.status}</i></td>
                   <td>${group.ticker}</td>
+                  <td><a href="/stamps/collection/${group.id}">${group.name}</a></td>
                   <td>${group.denomination}</td>
-                  <td>0</td>
-                  <td>${group.name}</td>
-                  <td>${group.status}</td>
+                  <td>${group.stamps}</td>
+                  <td><a class="uri" href=${IPFS.getLink(group.URI)} target="_blank">${group.URI}</a></td>
                   <td></td>
                 </tr>
               `)}`
-              : html`<tr><td class="empty" colspan="5">
+              : html`<tr><td class="empty" colspan="7">
                 You have no stamps collections on current account and network.
                 <br><br>
                 <a href="/stamps/create-collection">Add first collection</a>
@@ -45,7 +57,7 @@ customElements.define('stamps-list', class extends HTMLElement {
           </tbody>
           <tfoot>
             <tr>
-              <th colspan="5">
+              <th colspan="7">
 
               </th>
             </tr>
@@ -54,39 +66,41 @@ customElements.define('stamps-list', class extends HTMLElement {
       </div>
 
       <div class="stamps-list">
-        <a class="add" href="/stamps/add">Add postage stamp</a>
+        <!-- <a class="add" href="/stamps/add">Add postage stamp</a> -->
         <table>
           <caption>Stamps</caption>
           <thead>
             <tr>
-              <th>URI</th>
+              <th>Status</th>
               <th>Image</th>
               <th>Name</th>
               <th>Denomination</th>
               <th>Collection</th>
-              <th>Status</th>
+              <th>URI</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             ${stampsList.length
             ? html`${stampsList.map(stamp => html`
-                <tr class="item">
-                  <td><a class="uri" href=${IPFS.getLink(stamp.URI)} target="_blank">${stamp.URI}</a></td>
+                <tr class="item" data-link="/stamps/${stamp.id}" @click=${goTo}>
+                  <td><i class="status ${stamp.status}">${stamp.status}</i></td>
                   <td class="image">
                     <a class="uri" href=${IPFS.getLink(stamp.image)} target="_blank">
-                    ${stamp.image}
+                      ${stamp.image}
                       <!-- <img src=${IPFS.getLink(stamp.image)} /> -->
                     </a>
                   </td>
-                  <td>${stamp.name}</td>
+                  <td><a href="/stamps/${stamp.id}">${stamp.name}</a></td>
                   <td>${stamp.denomination}</td>
-                  <td>${stamp.groupId}</td>
-                  <td>${stamp.status}</td>
+                  <td>${groupsbyId[stamp.groupId].name}</td>
+                  <td><a class="uri" href=${IPFS.getLink(stamp.URI)} target="_blank">${stamp.URI}</a></td>
                   <td></td>
                 </tr>
               `)}`
-              : html`<tr><td class="empty" colspan="7">You have no stamps</td></tr>`
+              : html`<tr><td class="empty" colspan="7">
+                  You have no stamps.
+                  First <a href="/stamps/create-collection">Add collection</a>. </td></tr>`
             }
           </tbody>
           <tfoot>
