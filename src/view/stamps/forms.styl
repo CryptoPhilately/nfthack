@@ -20,7 +20,7 @@ create-collection form, add-stamp form {
       opacity 0.5
     }
 
-    input[type=text], textarea {
+    input[type=text], input[type=number], textarea {
       resize none
       outline none
       border none
@@ -152,8 +152,36 @@ add-stamp form {
     }
   }
 
-  input[type=text], textarea {
+  input[type=text], input[type=number], textarea {
     width calc(100% - 240px)
   }
+
+  input[name=name] {
+    width calc(100% - 240px - 190px)
+    display inline-block
+    @media (min-width:700px){
+      margin-left 0
+
+    }
+  }
+
+  input[name=denomination] {
+    display inline-block
+    width 150px
+  }
+
+  @media (max-width:700px){
+    .filepicker {
+      float none
+      display block
+      margin: 20px auto;
+    }
+    input[type=text], input[type=number], textarea {
+      width 100%
+      display block
+      // margin-left value
+    }
+  }
+
 }
 

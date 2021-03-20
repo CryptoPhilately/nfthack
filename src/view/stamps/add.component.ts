@@ -15,6 +15,7 @@ customElements.define('add-stamp', class extends HTMLElement {
     </label>
 
     <input name="name" type="text" placeholder="Name" minlength="1" required>
+    <input name="denomination" type="number" placeholder="Denomination" min="0.01" max="999999999999" step="0.01" required>
     <textarea name="desc" type="text" placeholder="Description" minlength="5"></textarea>
     <input class="ipfs-link" type="text" readonly name="image" placeholder="image in ipfs" required>
     <input type="submit" value="Create">`
@@ -42,7 +43,8 @@ customElements.define('add-stamp', class extends HTMLElement {
         status: 'draft',
         name: data.name,
         desc: data.desc,
-        image: data.image
+        image: data.image,
+        denomination: data.denomination
       })
       console.log({ id })
       if (id) {

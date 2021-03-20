@@ -13,7 +13,8 @@ const chains = {
   '0x2a': 'kovan',
   '0x3': 'ropsten',
   '0x4': 'rinkeby',
-  '0x5': 'goerli'
+  '0x5': 'goerli',
+  '0x539': 'localhost'
 }
 
 const isConnectedPromise = new Promise(resolve => {
@@ -99,6 +100,6 @@ export default new class User extends EventEmitter {
   }
 
   getNetwork () {
-    return chains[window.ethereum.chainId]
+    return chains[window.ethereum.chainId] || 'custom'
   }
 }()
