@@ -6,8 +6,8 @@ import EthCollections from '@model/EthCollections'
 
 import '@view/index'
 
+// @TODO: remove in PROD
 window.App = { config, User, Router, IPFS } // for debug in console
-
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize routing

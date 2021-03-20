@@ -11,7 +11,7 @@ export default class EthCollections {
     this.Contract = new this.web3.eth.Contract(abi, address)
   }
 
-  async test () {
+  async createCollection (name, desc, ticket, items) {
     const collectionURI = 'ipfs://'
     const merkleRoot = this.web3.utils.randomHex(32)
 
@@ -21,12 +21,7 @@ export default class EthCollections {
       10,
       merkleRoot,
       collectionURI
-    ).send({
-      from: this.web3.currentProvider.selectedAddress,
-      to: this.address
-      // value: amount,
-      // gasPrice: '20000000000'
-    })
+    ).send({ from: this.web3.currentProvider.selectedAddress, to: this.address })
 
     console.log('TX', tx)
   }
