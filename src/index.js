@@ -8,10 +8,6 @@ import '@view/index'
 
 window.App = { config, User, Router, IPFS } // for debug in console
 
-// test
-const ethCollections = new EthCollections(User.web3)
-window.App.ethCollections = ethCollections
-// // ethCollections.test()
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize routing
@@ -30,4 +26,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // remove loader
   document.body.classList.remove('loading')
+
+  // test
+  const ethCollections = new EthCollections(User.web3)
+  window.App.ethCollections = ethCollections
+  // // ethCollections.test()
 })

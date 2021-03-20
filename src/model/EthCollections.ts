@@ -22,13 +22,12 @@ export default class EthCollections {
       merkleRoot,
       collectionURI
     ).send({
-      from: window.web3.currentProvider.selectedAddress,
-      to: this.address,
+      from: this.web3.currentProvider.selectedAddress,
+      to: this.address
       // value: amount,
       // gasPrice: '20000000000'
-    });
+    })
 
-    console.log('TX', tx);
-
+    console.log('TX', tx)
   }
 }
