@@ -84,4 +84,12 @@ contract Collections is ICollections, ERC721 {
         return collections[tokenId].value;
     }
 
+    function getStampsContract(uint256 tokenId) external view returns(address) {
+        return collections[tokenId].stampsContract;
+    }
+
+    function getDepositoryContract(uint256 tokenId) external view returns(address) {
+        return IStamps(collections[tokenId].stampsContract).getDepository();
+    }
+
 }

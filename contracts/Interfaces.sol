@@ -22,6 +22,7 @@ interface ICollections is INominatedNFT {
 interface IStamps is INominatedNFT, IERC721Metadata {
     function mint(uint256 stampDenomination, string calldata URI, address owner) external returns(uint256);
     function burn(uint256 tokenId) external;
+    function getDepository() external view returns(address);
 }
 
 interface IFactory {

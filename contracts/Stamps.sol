@@ -59,4 +59,8 @@ contract Stamps is IStamps, ERC721 {
     function exists(uint256 tokenId) external view returns(bool) {
         return _exists(tokenId);
     }
+
+    function getDepository() external view override returns(address) {
+        return address(depository);
+    }
 }

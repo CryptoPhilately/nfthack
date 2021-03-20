@@ -62,6 +62,18 @@ contract("Collections", ([user]) => {
         stamps: ${stampsAddress}
         `
       );
+      const stampsCon = await collectionContract.getStampsContract(
+        collectionId
+      );
+      const depCon = await collectionContract.getDepositoryContract(
+        collectionId
+      );
+      console.log(
+        `
+        stamps contract: ${stampsCon}
+        depository contract: ${depCon}
+        `
+      );
     });
     it("Should get the collection data", async () => {
       const _collectionId = await collectionContract.tokenOfOwnerByIndex.call(
