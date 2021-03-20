@@ -10,8 +10,7 @@ const paths = {
   js: { entry: ['./src/index.js'], out: './public/index.js' },
   css: { entry: './src/index.styl', out: './public/styles.css' },
   html: { entry: './src/index.html', out: './public/index.html' },
-  static: { entry: './src/assets/', out: './public/assets/' },
-  contracts: { entry: './build/contracts/', out: './public/contracts/' }
+  static: { entry: './src/assets/', out: './public/assets/' }
 }
 
 function buildJS () {
@@ -50,10 +49,7 @@ function buildCSS () {
 }
 
 function copyStatic () {
-  return Promise.all([
-    copy(paths.static.entry, paths.static.out)
-    // copy(paths.contracts.entry, paths.contracts.out)
-  ]).catch(err=>{})
+  return copy(paths.static.entry, paths.static.out).catch(err=>{})
 }
 
 function copyHtml () {

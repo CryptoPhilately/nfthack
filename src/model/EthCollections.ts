@@ -4,11 +4,16 @@ export default class EthCollections {
   private web3:any
   public Contract:any
   public address:string
-  constructor (web3) {
+  constructor (web3, network) {
     this.web3 = web3
     const { abi, address } = config.contracts.collections
-    this.address = address
-    this.Contract = new this.web3.eth.Contract(abi, address)
+
+    if (!address[network]) {
+      alert(`Network ${network} not supported, contract, not deployed...`)
+      return
+    }
+    this.address = address[network]
+    this.Contract = new this.web3.eth.Contract(abi, this.address)
   }
 
   async createCollection (name, desc, ticket, items) {

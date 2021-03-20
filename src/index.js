@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.body.classList.remove('loading')
 
   // test
-  const ethCollections = new EthCollections(User.web3)
+  const ethCollections = new EthCollections(User.web3, User.getNetwork())
   window.App.ethCollections = ethCollections
-  // // ethCollections.test()
+  // ethCollections.test()
 })

@@ -100,6 +100,6 @@ export default new class User extends EventEmitter {
   }
 
   getNetwork () {
-    return chains[window.ethereum.chainId] || 'custom'
+    return chains[window.ethereum.chainId] || 'localhost'
   }
 }()

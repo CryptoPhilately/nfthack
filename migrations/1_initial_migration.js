@@ -12,6 +12,9 @@ module.exports = function (deployer) {
       Merkle.address
     );
 
-    fs.writeFileSync('./src/config/contract_address.txt', contract.address)
+    const { abi } = require('../build/contracts/Collections.json')
+
+    fs.writeFileSync('./src/config/CollectionsABI.json', JSON.stringify(abi))
+    fs.writeFileSync('./src/config/ColletionsLocalAddress.json', JSON.stringify({ address: contract.address }))
   });
 };
