@@ -3,12 +3,24 @@ import { address as ColletionsLocalAddress } from './ColletionsLocalAddress.json
 export default {
   ipfsGateway: { host: 'ipfs.infura.io', port: 5001, protocol: 'https' },
 
+  chains: {
+    '0x1': 'mainnet',
+    '0x2a': 'kovan',
+    '0x3': 'ropsten',
+    '0x4': 'rinkeby',
+    '0x5': 'goerli',
+    '0x539': 'localhost'
+  },
+
   contracts: {
     collections: {
       address: {
-        localhost: ColletionsLocalAddress,
         mainnet: '',
-        ropsten: ''
+        kovan: '',
+        ropsten: '',
+        rinkeby: '',
+        goerli: '',
+        localhost: ColletionsLocalAddress
       },
       abi: collectionsABI
     }

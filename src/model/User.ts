@@ -1,3 +1,4 @@
+import config from '@config/index'
 import EventEmitter from './EventEmitter'
 import DB from './DB'
 
@@ -6,15 +7,6 @@ declare global {
     ethereum:any;
     Web3:any;
   }
-}
-
-const chains = {
-  '0x1': 'mainnet',
-  '0x2a': 'kovan',
-  '0x3': 'ropsten',
-  '0x4': 'rinkeby',
-  '0x5': 'goerli',
-  '0x539': 'localhost'
 }
 
 const isConnectedPromise = new Promise(resolve => {
@@ -51,7 +43,7 @@ export default new class User extends EventEmitter {
     })
 
     window.ethereum.on('chainChanged', chainId => {
-      console.info('network changed to ', chainId, chains[chainId])
+      console.info('network changed to ', chainId, config.chains[chainId])
       window.location.reload()
     })
 
@@ -100,6 +92,6 @@ export default new class User extends EventEmitter {
   }
 
   getNetwork () {
-    return chains[window.ethereum.chainId] || 'localhost'
+    return config.chains[window.ethereum.chainId] || 'localhost'
   }
 }()
