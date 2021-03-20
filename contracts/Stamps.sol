@@ -30,8 +30,8 @@ contract Stamps is IStamps, ERC721 {
         _;
     }
 
-    function mint(uint256 stampDenomination, string calldata URI) external onlyCollectionContract  override returns(uint256) {
-        _mint(msg.sender, _currentTokenId);
+    function mint(uint256 stampDenomination, string calldata URI, address owner) external onlyCollectionContract override returns(uint256) {
+        _mint(owner, _currentTokenId);
         _setTokenURI(_currentTokenId, URI);
 
         if (isNominated) {
@@ -52,5 +52,9 @@ contract Stamps is IStamps, ERC721 {
 
     function getDenomination(uint256 tokenId) external view override returns(uint256) {
         return denominations[tokenId];
+    }
+
+    function exists(uint256 tokenId) external view returns(bool) {
+        return _exists(tokenId);
     }
 }
