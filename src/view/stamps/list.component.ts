@@ -1,6 +1,7 @@
 
 import { html, render } from 'lit-html'
 import User from '@model/User'
+import IPFS from '@model/IPFS'
 
 customElements.define('stamps-list', class extends HTMLElement {
   async connectedCallback () {
@@ -15,10 +16,10 @@ customElements.define('stamps-list', class extends HTMLElement {
           <caption>Collections</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Stamps</th>
               <th>Ticker</th>
+              <th>Denomination</th>
+              <th>Stamps</th>
+              <th>Name</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -27,10 +28,10 @@ customElements.define('stamps-list', class extends HTMLElement {
             ${groupsList.length
             ? html`${groupsList.map(group => html`
                 <tr class="item">
-                  <td>${group.name}</td>
-                  <td>${group.desc}</td>
+                  <td>${group.ticker}</td>
+                  <td>${group.denomination}</td>
                   <td>0</td>
-                  <td>${group.tokenSymbol}</td>
+                  <td>${group.name}</td>
                   <td>${group.status}</td>
                   <td></td>
                 </tr>
@@ -58,9 +59,11 @@ customElements.define('stamps-list', class extends HTMLElement {
           <caption>Stamps</caption>
           <thead>
             <tr>
+              <th>URI</th>
+              <th>Image</th>
               <th>Name</th>
+              <th>Denomination</th>
               <th>Collection</th>
-              <th>Description</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -69,14 +72,21 @@ customElements.define('stamps-list', class extends HTMLElement {
             ${stampsList.length
             ? html`${stampsList.map(stamp => html`
                 <tr class="item">
+                  <td><a class="uri" href=${IPFS.getLink(stamp.URI)} target="_blank">${stamp.URI}</a></td>
+                  <td class="image">
+                    <a class="uri" href=${IPFS.getLink(stamp.image)} target="_blank">
+                    ${stamp.image}
+                      <!-- <img src=${IPFS.getLink(stamp.image)} /> -->
+                    </a>
+                  </td>
                   <td>${stamp.name}</td>
+                  <td>${stamp.denomination}</td>
                   <td>${stamp.groupId}</td>
-                  <td>${stamp.desc}</td>
                   <td>${stamp.status}</td>
                   <td></td>
                 </tr>
               `)}`
-              : html`<tr><td class="empty" colspan="4">You have no stamps</td></tr>`
+              : html`<tr><td class="empty" colspan="7">You have no stamps</td></tr>`
             }
           </tbody>
           <tfoot>

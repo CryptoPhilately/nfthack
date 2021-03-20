@@ -1,28 +1,110 @@
-
+import { html, render } from 'lit-html'
+import IPFS from '@model/IPFS'
 import User from '@model/User'
 import Router from '@view/Router'
+
 customElements.define('create-collection', class extends HTMLElement {
   async connectedCallback () {
-    const form = document.createElement('form')
-    form.innerHTML = `<legend>Create new collection</legend>
-    <input name="name" type="text" placeholder="Name" minlength="1" required>
-    <textarea name="desc" type="text" placeholder="Description" minlength="1"></textarea>
-    <input name="tokenSymbol" type="text" placeholder="Token ticker" minlength="2" maxlength="2" required>
-    <input type="submit" value="Create">`
+    let collectionStamps = [{
+      name: '',
+      denomination: '',
+      desc: '',
+      image: ''
+    }]
 
-    form.onsubmit = async e => {
+    // if all forms filled add new stamp form
+    const addNewStampForm = () => {
+      const filteredStamps = collectionStamps.filter(stamp => !(!stamp.name && !stamp.desc && !stamp.image && !stamp.denomination))
+      filteredStamps.push({})
+      if (filteredStamps.length === collectionStamps.length) {
+        return
+      }
+      collectionStamps = filteredStamps
+      render(collectionForm(collectionStamps), this)
+    }
+
+    // Upload stamp image
+    const uploadImage = function () {
+      const stampIndex = Number(this.dataset.key)
+
+      // Set preview
+      document.getElementById('preview' + stampIndex).src = window.URL.createObjectURL(this.files[0])
+
+      // Upload to IPFS
+      const reader = new FileReader()
+      reader.onloadend = async () => {
+        const fileData = await IPFS.uploadImageAsSvg(reader.result)
+        console.info('Image uploaded', fileData.link)
+        document.getElementById(`stamp_${stampIndex}_image`).value = fileData.CID
+        collectionStamps[stampIndex].image = fileData.CID
+        addNewStampForm()
+      }
+      reader.readAsDataURL(this.files[0])
+    }
+
+    // Change stamp field
+    let stampSetTimeout
+    const stampSet = function () {
+      clearTimeout(stampSetTimeout)
+      stampSetTimeout = setTimeout(() => {
+        collectionStamps[this.dataset.key][this.dataset.field] = this.value
+        addNewStampForm()
+      }, 500)
+    }
+
+    // Save collection
+    const saveCollection = async e => {
       e.preventDefault()
       const data = Object.fromEntries(new FormData(e.target))
       console.info('submit', data)
-      const id = await User.DB.groups.put({
-        ...data,
-        status: 'draft'
-      })
-      console.log({ id })
-      if (id) {
-        Router.navigateTo('/stamps')
-      }
+      // const id = await User.DB.groups.put({
+      //   ...data,
+      //   status: 'draft'
+      // })
+      // console.log({ id })
+      // if (id) {
+      //   Router.navigateTo('/stamps')
+      // }
     }
-    this.appendChild(form)
+
+    const collectionForm = (stamps) => html`
+      <form @submit=${saveCollection}>
+      <legend>Create new collection</legend>
+      <input name="ticker" type="text" placeholder="Token ticker" minlength="2" maxlength="99" required>
+      <input name="denomination" type="number" placeholder="Denomination" min="0.01" max="999999999999" step="0.01" required>
+      <input name="name" type="text" placeholder="Name" minlength="1" required>
+      <textarea name="desc" type="text" placeholder="Description" minlength="1"></textarea>
+
+      <br>
+      <legend>Stamps</legend>
+      <div class="stamps-list">${html`${stamps.map((stamp, key) => html`
+      <fieldset class="add-stamp">
+        <label class="filepicker">
+          <svg enable-background="new 0 0 512 512"  viewBox="0 0 512 512"  xmlns="http://www.w3.org/2000/svg"><g><path d="m512 476h-512v-370h512z" fill="#fff8d5"/><path d="m256 106h256v370h-256z" fill="#ffe3ba"/><path d="m350 274c-24.813 0-45-20.187-45-45v-148c0-24.813 20.187-45 45-45h60c24.813 0 45 20.187 45 45v25h-30v-25c0-8.271-6.729-15-15-15h-60c-8.271 0-15 6.729-15 15v148c0 8.271 6.729 15 15 15s15-6.729 15-15v-53h30v53c0 24.813-20.187 45-45 45z" fill="#265d77"/><path d="m512 476h-512v-113.687l137-78.606 123.614 70.926 117.975-39.655 133.411 56.054z" fill="#4bbaed"/><path d="m105 256c-24.813 0-45-20.187-45-45s20.187-45 45-45 45 20.187 45 45-20.187 45-45 45z" fill="#ffd400"/><path d="m260.614 354.633-4.614-2.648v124.015h256v-104.968l-133.411-56.054z" fill="#388cb3"/></g></svg>
+          <input name="file[${key}]" class="file"
+            accept="image/png, image/jpeg, image/jpg"
+            type="file"
+            data-key=${key}
+            @change=${uploadImage}
+            required=${key !== stamps.length - 1}
+            >
+          <img id="preview${key}" class="preview">
+        </label>
+
+        <input name="stamp[${key}].name" @input=${stampSet} data-key=${key} data-field="name" type="text" placeholder="Name" minlength="1" required=${key !== stamps.length - 1}>
+        <input name="stamp[${key}].denomination" @input=${stampSet} data-key=${key} data-field="denomination" type="number" placeholder="Denomination" min="0.01" max="999999999999" step="0.01" required=${key !== stamps.length - 1} >
+        <textarea name="stamp[${key}].desc" @input=${stampSet} data-key=${key} data-field="desc" type="text" placeholder="Description" minlength="5"></textarea>
+        <input name="stamp[${key}].image" id="stamp_${key}_image" class="ipfs-link" type="hidden" readonly  placeholder="image in ipfs" required=${key !== stamps.length - 1} >
+
+        <!-- <input type="submit" value="Add stamp"> -->
+      </fieldset>
+      `)}`}</div>
+
+
+      <input type="submit" value="Save collection">
+      <form>
+    `
+
+    render(collectionForm(collectionStamps), this)
   }
 })

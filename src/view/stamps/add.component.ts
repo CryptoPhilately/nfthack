@@ -27,7 +27,7 @@ customElements.define('add-stamp', class extends HTMLElement {
         const fileData = await IPFS.uploadImageAsSvg(reader.result)
         console.info('Image uploaded', fileData.link)
         // @ts-ignore
-        form.getElementsByClassName('ipfs-link')[0].value = 'ipfs://' + fileData.CID
+        form.getElementsByClassName('ipfs-link')[0].value = fileData.CID
         form.getElementsByClassName('ipfs-link')[0].onclick = () => { window.open(fileData.link, '_blank') }
         form.classList.remove('uploading-image')
       }
@@ -36,17 +36,26 @@ customElements.define('add-stamp', class extends HTMLElement {
 
     form.onsubmit = async e => {
       e.preventDefault()
+      e.target.classList.add('loading')
       // @ts-ignore
       const data = Object.fromEntries(new FormData(e.target))
 
-      const id = await User.DB.stamps.put({
-        status: 'draft',
+      const URI = await IPFS.addJSON({
         name: data.name,
         desc: data.desc,
         image: data.image,
         denomination: data.denomination
       })
-      console.log({ id })
+
+      const id = await User.DB.stamps.put({
+        status: 'draft',
+        URI: URI,
+        name: data.name,
+        desc: data.desc,
+        image: data.image,
+        denomination: data.denomination
+      })
+
       if (id) {
         Router.navigateTo('/stamps')
       }
