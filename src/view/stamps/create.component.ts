@@ -1,5 +1,6 @@
 import { html, render } from 'lit-html'
 import IPFS from '@model/IPFS'
+import EthCollections from '@model/EthCollections'
 import User from '@model/User'
 import Router from '@view/Router'
 
@@ -70,23 +71,49 @@ customElements.define('create-collection', class extends HTMLElement {
       const groupId = await User.DB.groups.put({
         status: 'draft',
         desc: data.desc,
-        denomination: data.denomination,
+        denomination: Math.ceil(data.denomination),
         name: data.name,
         ticker: data.ticker,
-        stamps: stamps.length,
+        stamps: stamps.length
       })
 
       // Create stamps
-      await Promise.all(stamps.map(stamp => {
-        return User.DB.stamps.put({
+      const stampsDB = await Promise.all(stamps.map(async stamp => {
+        const stampId = await User.DB.stamps.put({
           status: 'draft',
           groupId: groupId,
           desc: stamp.desc,
-          denomination: stamp.denomination,
+          denomination: Math.ceil(stamp.denomination),
           name: stamp.name,
           image: stamp.image
         })
+        return User.DB.stamps.get(stampId)
       }))
+
+      const ethCollections = new EthCollections(User.web3, User.getNetwork())
+      const result = await ethCollections.createCollection({
+        id: groupId,
+        name: data.name,
+        description: data.desc,
+        ticker: data.ticker,
+        denomination: Math.ceil(data.denomination),
+        items: stampsDB.map(stamp => ({
+          id: stamp.id,
+          name: stamp.name,
+          description: stamp.desc,
+          denomination: Math.ceil(stamp.denomination),
+          image: stamp.image
+        }))
+      })
+
+      if (!result?.transactionHash) {
+        console.error(result)
+        alert('Mint error...')
+        return
+      } else {
+        console.info('TX', result)
+        await User.DB.groups.update(groupId, { TX: result.transactionHash })
+      }
 
       e.target.classList.remove('saving-collection')
       if (groupId) {
@@ -97,7 +124,7 @@ customElements.define('create-collection', class extends HTMLElement {
     const collectionForm = (stamps) => html`<form @submit=${saveCollection}>
       <legend>Create new collection</legend>
       <input name="ticker" type="text" placeholder="Token ticker" minlength="2" maxlength="99" required>
-      <input name="denomination" type="number" placeholder="Denomination" min="0.01" max="999999999999" step="0.01" required>
+      <input name="denomination" type="number" placeholder="Denomination" min="1" max="999999999999" step="1" required>
       <input name="name" type="text" placeholder="Name" minlength="1" required>
       <textarea name="desc" type="text" placeholder="Description" minlength="1"></textarea>
 
@@ -120,7 +147,7 @@ customElements.define('create-collection', class extends HTMLElement {
           </label>
 
           <input name="stamp[${key}].name" @input=${stampSet} data-key=${key} data-field="name" type="text" placeholder="Name" minlength="1" ?required=${required}>
-          <input name="stamp[${key}].denomination" @input=${stampSet} data-key=${key} data-field="denomination" type="number" placeholder="Denomination" min="0.01" max="999999999999" step="0.01" ?required=${required} >
+          <input name="stamp[${key}].denomination" @input=${stampSet} data-key=${key} data-field="denomination" type="number" placeholder="Denomination" min="1" max="999999999999" step="1" ?required=${required} >
           <textarea name="stamp[${key}].desc" @input=${stampSet} data-key=${key} data-field="desc" type="text" placeholder="Description" minlength="5"></textarea>
           <input name="stamp[${key}].image" id="stamp_${key}_image" class="ipfs-link" type="hidden" readonly  placeholder="image in ipfs" ?required=${required} >
           <button @click=${removeStamp} data-key=${key}> &times; remove</button>

@@ -2,7 +2,7 @@ import config from '@config/index'
 import User from '@model/User'
 import Router from '@view/Router'
 import IPFS from '@model/IPFS'
-import EthCollections from '@model/EthCollections'
+// import EthCollections from '@model/EthCollections'
 
 // import MerkleTree from '@model/merkle/index'
 // import { web3soliditySha3 } from '@model/merkle/utils'
@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.body.classList.remove('loading')
 
   // test
-  const ethCollections = new EthCollections(User.web3, User.getNetwork())
-  window.App.ethCollections = ethCollections
+  // const ethCollections = new EthCollections(User.web3, User.getNetwork())
+  // window.App.ethCollections = ethCollections
   // ethCollections.test()
 
   // merkle tree test
