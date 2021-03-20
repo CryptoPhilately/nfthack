@@ -21,7 +21,7 @@ interface ICollections  {
 }
 
 interface IStamps is IERC721Metadata {
-    function mint(uint256 stampDenomination, string calldata URI) external returns(uint256);
+    function mint(uint256 stampDenomination, string calldata URI, address owner) external returns(uint256);
     function burn(uint256 tokenId) external;
     function getDenomination(uint256 tokenId) external returns(uint256);
 }

@@ -2,17 +2,14 @@
 pragma solidity >=0.7.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import {ICollections, IStamps, IMerkle} from "./Interfaces.sol";
 import './Stamps.sol';
-import '@openzeppelin/contracts/presets/ERC721PresetMinterPauserAutoId.sol';
 
 contract Collections is ERC721 {
 
-    using SafeMath for uint256;
-
     uint256 _currentTokenId = 0;
     IMerkle Merkle;
+
     struct Collection {
         bytes32 root;
         uint256 value;
@@ -20,8 +17,8 @@ contract Collections is ERC721 {
         bool nominated;
     }
 
-    mapping(uint256 => mapping(bytes32 => bool)) detachedItems;
-    mapping (uint256 => Collection) collections;
+    mapping(uint256 => mapping(bytes32 => bool)) public detachedItems;
+    mapping(uint256 => Collection) public collections;
 
     event CollectionCreated(uint256 indexed tokenId, IStamps indexed stampsContract);
 
@@ -53,17 +50,18 @@ contract Collections is ERC721 {
         bytes32 itemHash = keccak256(abi.encodePacked(denomination, itemURI));
         Collection storage collection = collections[collectionId];
         require(_isApprovedOrOwner(msg.sender, collectionId), "");
-        require(Merkle.verifyProof(itemHash, collection.root, proof), "");
+        // TODO:
+        // require(Merkle.verifyProof(itemHash, collection.root, proof), "");
 
         if (collection.nominated) {
-            collection.value = collection.value.sub(denomination);
+            collection.value = collection.value - denomination;
         }
 
         detachedItems[collectionId][itemHash] = true;
-        IStamps(collection.stampsContract).mint(denomination, itemURI);
+        IStamps(collection.stampsContract).mint(denomination, itemURI, msg.sender);
     }
 
-    function joinItem( uint256 collectionId, uint256 itemId) external  {
+    function joinItem(uint256 collectionId, uint256 itemId) external  {
         Collection storage collection = collections[collectionId];
         uint256 stampDenomination = IStamps(collection.stampsContract).getDenomination(itemId);
         string memory stampURI = IStamps(collection.stampsContract).tokenURI(itemId);
@@ -71,7 +69,7 @@ contract Collections is ERC721 {
         require(detachedItems[collectionId][itemHash], "");
 
         if (collection.nominated == true) {
-            collection.value = collection.value.add(stampDenomination);
+            collection.value = collection.value + stampDenomination;
         }
 
         detachedItems[collectionId][itemHash] = false;
