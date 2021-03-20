@@ -25,7 +25,7 @@
     "lint": "npm run lint:ts",
     "lint:ts": "eslint --ext=.ts, ./src",
     "lint:ts:fix": "eslint --fix --ext=.ts ./src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "dependencies": {
     "dexie": "^3.0.3",
