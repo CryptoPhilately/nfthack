@@ -1,4 +1,5 @@
 const bs = require('browser-sync').create()
+const historyApiFallback = require('connect-history-api-fallback')
 const { buildJS, buildCSS, copyHtml, copyStatic } = require('./build')
 
 // serve
@@ -7,7 +8,8 @@ bs.init({
   open: false,
   server: './public',
   files: './public/*',
-  ui: false
+  ui: false,
+  middleware: [historyApiFallback()]
 })
 
 // watch changes
