@@ -13,19 +13,22 @@ interface IMerkle {
     function verifyProof(bytes32 leaf, bytes32 root, bytes memory proof) external pure returns (bool);
 }
 
-interface ICollections  {
+interface ICollections is INominatedNFT {
     function createCollection(string memory name, string memory symbol, uint256 value, bytes32 root, string calldata URI) external;
     function detachItem(uint256 collectionId, uint256 denomination, string calldata stampURI, bytes calldata proof) external;
     function joinItem(uint256 collectionId, uint256 tokenId) external;
-    function verifyProof(bytes32 leaf, bytes32 root, bytes memory proof) external returns (bool);
 }
 
-interface IStamps is IERC721Metadata {
+interface IStamps is INominatedNFT, IERC721Metadata {
     function mint(uint256 stampDenomination, string calldata URI, address owner) external returns(uint256);
     function burn(uint256 tokenId) external;
-    function getDenomination(uint256 tokenId) external returns(uint256);
+    function getDepository() external view returns(address);
 }
 
+interface IFactory {
+    function createStampContract(string memory name, string memory symbol, bool nominated) external returns(IStamps);
+    function createDepositoryContract(string memory name, string memory symbol, address collectionContract) external returns(IDepository);
+}
 
 interface IDepository is IERC20 {
 

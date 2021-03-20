@@ -2,13 +2,14 @@
 pragma solidity >=0.6.0 <0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {ICollections, IStamps, IDepository} from "./Interfaces.sol";
+import {ICollections, IDepository, IFactory} from "./Interfaces.sol";
 import "./Depository.sol";
 
 contract Stamps is IStamps, ERC721 {
 
     address CollectionsAddress;
-    IDepository nominatedTokens;
+    IFactory Factory;
+    IDepository public depository;
     bool public isNominated;
 
     uint256 _currentTokenId = 0;
@@ -17,10 +18,11 @@ contract Stamps is IStamps, ERC721 {
 
     event StampMinted(uint256 indexed _currentTokenId);
 
-    constructor(string memory name, string memory symbol, bool nominated) ERC721(name, symbol) {
-        CollectionsAddress = msg.sender;
+    constructor(string memory name, string memory symbol, bool nominated, address collectionAddress, IFactory factory) ERC721(name, symbol) {
+        CollectionsAddress = collectionAddress;
+        Factory = factory;
         if (nominated) {
-            nominatedTokens = new Depository(name, symbol);
+            depository = Factory.createDepositoryContract(name, symbol, CollectionsAddress);
             isNominated = true;
         }
     }
@@ -56,5 +58,9 @@ contract Stamps is IStamps, ERC721 {
 
     function exists(uint256 tokenId) external view returns(bool) {
         return _exists(tokenId);
+    }
+
+    function getDepository() external view override returns(address) {
+        return address(depository);
     }
 }
