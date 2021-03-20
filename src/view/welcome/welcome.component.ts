@@ -1,4 +1,4 @@
-
+import config from '@config/index'
 import User from '@model/User'
 import Router from '@view/Router'
 
@@ -21,6 +21,15 @@ customElements.define('welcome-screen', class extends HTMLElement {
         <button title="Log In with MetaMask">Connect</button>
       `
       this.getElementsByTagName('button')[0].addEventListener('click', () => { User.login() })
+      return
+    }
+
+    // check network
+    const network = User.getNetwork()
+    if (!config.contracts.collections.address[network]) {
+      this.innerHTML = `
+        <p>Sorry... Network ${network} is not supported, our contract not deployed...</p>
+      `
       return
     }
 

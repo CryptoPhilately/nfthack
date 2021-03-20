@@ -15,7 +15,7 @@ export default class EthCollections extends EventEmitter {
     const { abi, address } = config.contracts.collections
 
     if (!address[network]) {
-      alert(`Network ${network} not supported, contract, not deployed...`)
+      alert(`Network ${network} not supported, contract not deployed...`)
       return
     }
     this.address = address[network]
@@ -28,7 +28,7 @@ export default class EthCollections extends EventEmitter {
 
     // Upload items to IPFS
     console.info('Upload items to IPFS')
-    this.emit('uploadingItemsToIPFS', {})
+    this.emit('create:status', { text: 'Uploading items to IPFS' })
     collectionData.items = await Promise.all(items.map(async item => {
       const data4ipfs = {
         name: item.name,
@@ -43,16 +43,16 @@ export default class EthCollections extends EventEmitter {
       return { URI: item.URI, ...data4ipfs }
     }))
 
-    this.emit('itemsUploaded', {})
+    this.emit('create:status', { text: 'Items uploaed' })
     console.info(`All ${items.length} items uploaded`, collectionData.items)
 
     // Upload collection data to IPFS
-    this.emit('uploadCollection2IPFS', {})
+    this.emit('create:status', { text: 'Upload collection data to IPFS' })
     console.info('Upload collection to IPFS', collectionData)
     collectionData.URI = await IPFS.addJSON(collectionData)
     console.info('Collection data uploaded', collectionData.URI)
     await User.DB.groups.update(id, { status: 'ipfs', URI: collectionData.URI })
-    this.emit('collectionUploaded', { URI: collectionData.URI })
+    this.emit('create:status', { text: 'Collection uploaded' })
 
     // Generate merkle tree
     console.info('Create merkle elements')
@@ -63,14 +63,13 @@ export default class EthCollections extends EventEmitter {
         { v: item.URI, t: 'string' }
       )
     })
-    console.info('Merkle elements', merkleElements)
     const merkleRoot = (new MerkleTree(merkleElements, false)).getRootHex()
     console.info('merkleRoot', merkleRoot)
 
     // Write colletion to contract
     console.info('contract', this.address, this.Contract.methods)
     console.info('start transaction', collectionData)
-    this.emit('createCollectionSend', { })
+    this.emit('create:status', { text: 'Write collection to blockchain' })
     const TX = await this.Contract.methods.createCollection(
       collectionData.name,
       collectionData.ticker,
@@ -79,7 +78,7 @@ export default class EthCollections extends EventEmitter {
       'ipfs://' + collectionData.URI
     ).send({ from: this.web3.currentProvider.selectedAddress, to: this.address })
 
-    this.emit('createCollectionTX', TX)
+    this.emit('create:status', { text: 'Transaction sended' })
 
     await User.DB.groups.update(id, { status: 'minted' })
 
