@@ -1,10 +1,17 @@
+import config from '@config/index'
 import User from '@model/User'
 import Router from '@view/Router'
 import IPFS from '@model/IPFS'
+import EthCollections from '@model/EthCollections'
 
 import '@view/index'
 
-window.App = { User, Router, IPFS } // for debug in console
+window.App = { config, User, Router, IPFS } // for debug in console
+
+// test
+const ethCollections = new EthCollections(User.web3)
+window.App.ethCollections = ethCollections
+// // ethCollections.test()
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize routing

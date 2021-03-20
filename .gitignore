@@ -118,3 +118,4 @@ dist
 
 # Truffle artifacts
 build/contracts
+src/config/contract_address.txt
