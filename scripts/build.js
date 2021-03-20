@@ -7,10 +7,10 @@ const { copy } = require('fs-extra')
 const startTime = Date.now()
 
 const paths = {
-  js: { entry: ['./src/index.js'], out: './dist/index.js' },
-  css: { entry: './src/index.styl', out: './dist/styles.css' },
-  html: { entry: './src/index.html', out: './dist/index.html' },
-  static: { entry: './src/assets/', out: './dist/assets/' }
+  js: { entry: ['./src/index.js'], out: './public/index.js' },
+  css: { entry: './src/index.styl', out: './public/styles.css' },
+  html: { entry: './src/index.html', out: './public/index.html' },
+  static: { entry: './src/assets/', out: './public/assets/' }
 }
 
 function buildJS () {

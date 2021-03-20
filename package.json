@@ -6,8 +6,8 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "NODE_ENV=development node scripts/dev.js",
-    "build": "NODE_ENV=production rm -rf dist/* && node scripts/build.js",
-    "serve": "npx serve -p 3000 -s ./dist",
+    "build": "NODE_ENV=production rm -rf public/* && node scripts/build.js",
+    "serve": "npx serve -p 3000 -s ./public",
     "lint": "npm run lint:ts",
     "lint:ts": "eslint --ext=.ts, ./src",
     "lint:ts:fix": "eslint --fix --ext=.ts ./src",

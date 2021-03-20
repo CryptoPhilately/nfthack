@@ -5,8 +5,8 @@ const { buildJS, buildCSS, copyHtml, copyStatic } = require('./build')
 bs.init({
   port: 7777,
   open: false,
-  server: './dist',
-  files: './dist/*',
+  server: './public',
+  files: './public/*',
   ui: false
 })
 

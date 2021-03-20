@@ -1,6 +1,7 @@
 # NFT Posts stamps collections
 
-DApp for tokenize post stamps.
+DApp for tokenize post stamps - https://nft-collections.web.app
+
 
 ## Development
 App writes in vanillaJS / typescript with native web-components.
