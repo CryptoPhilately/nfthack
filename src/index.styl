@@ -3,13 +3,15 @@
 @import '/src/view/styles/loader.styl'
 @import '/src/view/login/login.styl'
 @import '/src/view/welcome/welcome.styl'
+@import '/src/view/stamps/list.styl'
+@import '/src/view/stamps/forms.styl'
 
 
-headerHeight = 60px
-
-body { padding-top: headerHeight }
+body {
+  padding-top: 60px
+}
 header {
-  height: headerHeight;
+  height: 60px;
   position: fixed; z-index: 5; top:0; width:100%;
   .content { position: relative;}
 
@@ -58,3 +60,20 @@ footer {
     color: #666
   }
 }
+
+
+// post stamp BG
+// background: radial-gradient(
+//       transparent 0px,
+//       transparent 3px,
+//       white 3px,
+//       white
+//   );
+//   background-size: 10px 10px;
+//   background-position: -5px -5px;
+//   &:after { display block; content: ''; position:absolute;
+//     top 0px; left:0px; right:0px;
+//     height: 54px;
+//     background:#fff;
+//   }
+

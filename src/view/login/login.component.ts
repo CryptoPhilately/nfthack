@@ -1,5 +1,5 @@
 
-import User from '../../User'
+import User from '../../model/User'
 
 customElements.define('log-in', class extends HTMLElement {
   async connectedCallback () {

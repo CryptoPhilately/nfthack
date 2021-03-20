@@ -1,0 +1,159 @@
+
+
+create-collection form, add-stamp form {
+    position relative
+    margin:40px 0 40px 0;
+    background #fff;
+    padding:20px 50px 80px 20px;
+    border-radius 10px
+
+    legend {
+      text-align left
+      font-weight 200
+      font-size 22px
+      padding 0px 0 20px 12px
+    }
+
+    input[readonly] {
+      cursor:default
+      pointer-events : none
+      opacity 0.5
+    }
+
+    input[type=text], textarea {
+      resize none
+      outline none
+      border none
+      font-size 18px
+      padding: 5px 10px 5px 5px
+      font-family sans-serif
+
+      display: block
+      margin: 10px 10px 30px 10px;
+
+
+      border-bottom 2px solid #56b9ff
+      &:placeholder-shown {
+        border-bottom-color #ddd
+      }
+      &:invalid {
+        border-bottom-color #ffaaaa
+        &:placeholder-shown {
+          border-bottom-color #ddd
+        }
+      }
+
+
+      width 100%
+    }
+
+    &:invalid input[type=submit] {
+      filter: grayscale(1)
+      // pointer-events none
+    }
+    input[type=submit] {
+      position absolute
+      bottom: 40px
+      right 50px
+      display: inline-block
+      border:none; outline:none;
+      text-decoration none
+      color: #fff;
+      cursor: pointer;
+      border-radius: 5px;
+      background: #f89c36;
+      letter-spacing: 1px;
+      text-transform: uppercase
+      font-size: 14px;
+      font-weight: 500;
+      font-style: normal;
+      padding:7px 12px;
+      &:hover {
+        opacity: 0.95;
+      }
+      push-btn()
+    }
+
+    input[name=tokenSymbol] {
+      width 120px
+      text-transform: uppercase
+      text-align center
+    }
+}
+
+
+add-stamp form {
+  .filepicker {
+    cursor pointer
+    display: inline-block
+    border-radius 10px
+    border: 2px dashed #ccc
+    width 200px; height 200px;
+    overflow hidden
+    margin 0 30px 0 10px
+    float: left
+    position relative
+    text-align center
+    input {
+      position absolute
+      top:0; left:0; right:0; bottom:0;
+      opacity 0
+      cursor pointer
+    }
+
+    &::after { content:'Please choose image'; display: block; }
+
+    svg {
+      width 100px
+      margin-top 20px
+    }
+
+    img#preview {
+      background:#fff;
+      position: absolute
+      top:0; left:0;
+      width: 100%; height:auto
+    }
+  }
+
+  &.uploading-image {
+    input[type=submit] {
+      pointer-events none
+      opacity 0.1;
+    }
+    .filepicker {
+      animation: pulse1 700ms linear infinite;
+      @keyframes pulse1 {
+        0% { opacity: 1; }
+        50% { opacity: 0.8; }
+        100% { opacity: 1; }
+      }
+      &::after {
+        position absolute
+        top:40%; left:25px;
+        padding: 10px
+        border-radius:5px;
+        z-index 2
+        content:'Uploading image'; display: block;
+        background rgba(255,255,255,0.8)
+      }
+    }
+  }
+
+  input.ipfs-link {
+    pointer-events all
+    cursor pointer
+    opacity 0.5
+    &:hover { opacity: 0.8 }
+    &:placeholder-shown {
+      pointer-events none
+      cursor default
+      &:hover { opacity: 0.5 }
+    }
+  }
+
+  input[type=text], textarea {
+    width calc(100% - 240px)
+  }
+}
+

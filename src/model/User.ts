@@ -1,4 +1,5 @@
 import EventEmitter from './EventEmitter'
+import DB from './DB'
 
 declare global {
   interface Window {
@@ -37,6 +38,7 @@ const isConnectedPromise = new Promise(resolve => {
 export default new class User extends EventEmitter {
   private isReady:boolean
   public web3:any
+  public DB:any
   constructor () {
     super()
     if (!this.metamaskExist()) { return }
@@ -57,7 +59,15 @@ export default new class User extends EventEmitter {
       this.web3 = new window.Web3(window.ethereum)
       this.isReady = true
       this.emit('ready', {})
+      this.initDatabase()
     })
+  }
+
+  initDatabase () {
+    if (!window.ethereum.selectedAddress) { return }
+    // use differents datbases for different networks and accounts
+    const dbName = window.ethereum.chainId + '-' + window.ethereum.selectedAddress
+    this.DB = new DB(dbName)
   }
 
   metamaskExist ():boolean {

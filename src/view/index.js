@@ -1,0 +1,5 @@
+import './login/login.component'
+import './welcome/welcome.component'
+import './stamps/list.component'
+import './stamps/create.component'
+import './stamps/add.component'

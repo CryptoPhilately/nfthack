@@ -6,6 +6,11 @@
       "dom"
     ],
     "baseUrl": "src", // This must be specified if "paths" is.
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "paths": {
+        "@config/*": ["config/*"],
+        "@model/*": ["model/*"],
+        "@view/*": ["view/*"]
+    },
   }
 }
