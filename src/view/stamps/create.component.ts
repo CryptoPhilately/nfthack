@@ -64,9 +64,17 @@ customElements.define('create-collection', class extends HTMLElement {
     const saveCollection = async e => {
       e.preventDefault()
       e.target.classList.add('saving-collection')
-      const data = Object.fromEntries(new FormData(e.target))
+      const progress = document.getElementById('mint_progress')
       const stamps = collectionStamps.filter(stamp => !!stamp.image)
+      const data = Object.fromEntries(new FormData(e.target))
 
+      // Collection demonimation - sum of stamps denomination
+      data.denomination = stamps.reduce((sum, s) => {
+        sum += Math.ceil(Number(s.denomination))
+        return sum
+      }, 0)
+
+      progress.innerText = 'Save in local Database'
       // Create group in DB
       const groupId = await User.DB.groups.put({
         status: 'draft',
@@ -83,7 +91,7 @@ customElements.define('create-collection', class extends HTMLElement {
           status: 'draft',
           groupId: groupId,
           desc: stamp.desc,
-          denomination: Math.ceil(stamp.denomination),
+          denomination: Math.ceil(Number(stamp.denomination)),
           name: stamp.name,
           image: stamp.image
         })
@@ -91,6 +99,9 @@ customElements.define('create-collection', class extends HTMLElement {
       }))
 
       const ethCollections = new EthCollections(User.web3, User.getNetwork())
+      ethCollections.on('create:status', data => {
+        progress.innerText = data.text
+      })
       const result = await ethCollections.createCollection({
         id: groupId,
         name: data.name,
@@ -104,27 +115,33 @@ customElements.define('create-collection', class extends HTMLElement {
           denomination: Math.ceil(stamp.denomination),
           image: stamp.image
         }))
+      }).catch(err => {
+        progress.innerText = 'Mint error...'
+        console.error(err)
+        alert('Mint error...')
+        e.target.classList.remove('saving-collection')
       })
 
+      e.target.classList.remove('saving-collection')
+
       if (!result?.transactionHash) {
+        progress.innerText = 'Mint error...'
         console.error(result)
         alert('Mint error...')
         return
       } else {
+        progress.innerText = 'Collection Succefully minted!'
         console.info('TX', result)
         await User.DB.groups.update(groupId, { TX: result.transactionHash })
       }
 
-      e.target.classList.remove('saving-collection')
-      if (groupId) {
-        Router.navigateTo('/stamps')
-      }
+      Router.navigateTo('/stamps/collection/' + groupId)
     }
 
     const collectionForm = (stamps) => html`<form @submit=${saveCollection}>
       <legend>Create new collection</legend>
       <input name="ticker" type="text" placeholder="Token ticker" minlength="2" maxlength="99" required>
-      <input name="denomination" type="number" placeholder="Denomination" min="1" max="999999999999" step="1" required>
+      <!-- <input name="denomination" type="number" placeholder="Denomination" min="1" max="999999999999" step="1" required> -->
       <input name="name" type="text" placeholder="Name" minlength="1" required>
       <textarea name="desc" type="text" placeholder="Description" minlength="1"></textarea>
 
@@ -154,7 +171,8 @@ customElements.define('create-collection', class extends HTMLElement {
         </fieldset>`
       })}`}</div>
 
-      <input type="submit" value="Save collection draft">
+      <p id="mint_progress"></p>
+      <input type="submit" value="Mint collection">
     </form>`
 
     render(collectionForm(collectionStamps), this)
