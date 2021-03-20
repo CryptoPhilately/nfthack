@@ -5,8 +5,8 @@ import IPFS from '@model/IPFS'
 import EthCollections from '@model/EthCollections'
 
 import MerkleTree from '@model/merkle/index'
-
 import { web3soliditySha3 } from '@model/merkle/utils'
+
 import '@view/index'
 
 // @TODO: remove in PROD
@@ -35,8 +35,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.App.ethCollections = ethCollections
   // ethCollections.test()
 
-  // merkle tree
+  // merkle tree test
   const elements = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(e => web3soliditySha3(e))
-  const merkleTree = new MerkleTree(elements, true)
+  const merkleTree = new MerkleTree(elements, false)
   console.log('merkleTree root', merkleTree.getRootHex())
+
+  const root = merkleTree.getRootBuffer()
+  console.log(root)
+  const proof = merkleTree.getProofBuffer(elements[0])
+  console.log(proof)
+  const valid = merkleTree.validate(proof, root, elements[0])
+  console.log({ valid })
 })
+
