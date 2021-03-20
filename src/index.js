@@ -4,6 +4,9 @@ import Router from '@view/Router'
 import IPFS from '@model/IPFS'
 import EthCollections from '@model/EthCollections'
 
+import MerkleTree from '@model/merkle/index'
+
+import { web3soliditySha3 } from '@model/merkle/utils'
 import '@view/index'
 
 // @TODO: remove in PROD
@@ -31,4 +34,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const ethCollections = new EthCollections(User.web3, User.getNetwork())
   window.App.ethCollections = ethCollections
   // ethCollections.test()
+
+  // merkle tree
+  const elements = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(e => web3soliditySha3(e))
+  const merkleTree = new MerkleTree(elements, true)
+  console.log('merkleTree root', merkleTree.getRootHex())
 })
