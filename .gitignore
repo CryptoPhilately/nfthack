@@ -115,3 +115,6 @@ dist
 .pnp.*
 
 .DS_Store
+
+# Truffle artifacts
+build/contracts
