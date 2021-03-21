@@ -224,22 +224,26 @@ export default new class EthCollections extends EventEmitter {
   }
 
   async detachItem (stampId, groupId) {
-    const [group, stamp, stamps] = await Promise.all([
+    const [group, stamp] = await Promise.all([
       User.DB.groups.get(groupId),
-      User.DB.stamps.get(stampId),
-      User.DB.stamps.where({ groupId }).toArray()
+      User.DB.stamps.get(stampId)
     ])
 
     const collection = await this.getCollectionByURI(group.URI)
     if (!collection) {
       throw new Error(`Collection not found (URI ${group.URI})`)
     }
+    const { items } = await IPFS.catJSON(collection.URI)
 
-    const proof = (new MerkleTree(stamps.map(i => this.itemForMerkleTree(i)), false)).getProofHex(this.itemForMerkleTree(stamp))[0]
+    const proofArr = (new MerkleTree(items.map(i => this.itemForMerkleTree(i)), false)).getProofHex(this.itemForMerkleTree(stamp))
+    console.log('proofArr', proofArr)
+
+    const proof = '0x' + proofArr.map(p => p.substr(2)).join('')
     if (!proof) {
       throw new Error('Cant create proof')
     }
 
+    console.info('detachItem Tx data', collection.id, denomination2tokens(stamp.denomination), stamp.URI, proof, { from: this.web3.currentProvider.selectedAddress, to: this.address })
     const TX = await this.Contract.methods.detachItem(
       collection.id,
       denomination2tokens(stamp.denomination),
