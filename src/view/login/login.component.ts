@@ -1,5 +1,6 @@
 
 import User from '../../model/User'
+import Router from '@view/Router'
 
 customElements.define('log-in', class extends HTMLElement {
   async connectedCallback () {
@@ -19,7 +20,6 @@ customElements.define('log-in', class extends HTMLElement {
     User.on('address:changed', address => {
       if (!address) { return }
       const network = User.getNetwork()
-      const subdomain = (network !== 'mainnet') ? network + '.' : ''
       const showAddress = address.substr(0, 6) + '...' + address.substr(-4)
       this.innerHTML = `<div class="userblock">
         <a href="${User.explorerLink('address', address)}"
@@ -27,6 +27,7 @@ customElements.define('log-in', class extends HTMLElement {
           title="${address} in ${network} network"
           class="address"><b>${network}</b>: ${showAddress}</a>
       </div>`
+      Router.navigateTo('/stamps')
     })
   }
 })

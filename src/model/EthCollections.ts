@@ -5,26 +5,31 @@ import User from '@model/User'
 import MerkleTree from '@model/merkle/index'
 import { web3soliditySha3 } from '@model/merkle/utils'
 
-export default class EthCollections extends EventEmitter {
+export default new class EthCollections extends EventEmitter {
   private web3:any
   private fetchCollectionsPromise:Promise<any>
+  private fetchFromIPFSPromise:Promise<any>
   public Collections:any[] = []
   public Contract:any
   public address:string
   constructor () {
     super()
-    this.web3 = User.web3
-    const network = User.getNetwork()
     const { abi, address } = config.contracts.collections
 
-    if (!address[network]) {
-      alert(`Network ${network} not supported, contract not deployed...`)
-      return
-    }
-    this.address = address[network]
-    this.Contract = new this.web3.eth.Contract(abi, this.address)
+    User.ready().then(() => {
+      this.web3 = User.web3
+      const network = User.getNetwork()
 
-    this.fetchCollectionsPromise = this.fetchCollections()
+      if (!address[network]) {
+        alert(`Network ${network} not supported, contract not deployed...`)
+        return
+      }
+      this.address = address[network]
+      this.Contract = new this.web3.eth.Contract(abi, this.address)
+
+      this.fetchCollectionsPromise = this.fetchCollections()
+      this.fetchCollectionsFromIPFS()
+    })
   }
 
   // Save data to IPFS
@@ -101,6 +106,7 @@ export default class EthCollections extends EventEmitter {
 
     if (TX?.transactionHash) {
       await User.DB.groups.update(groupId, { status: 'minted', TX: TX.transactionHash, txdata: TX })
+      this.fetchCollectionsPromise = this.fetchCollections()
     }
 
     return TX
@@ -108,8 +114,9 @@ export default class EthCollections extends EventEmitter {
 
   // get collections from smart contract
   async fetchCollections () {
+    console.info('fetch collections from blockchain')
     const user = this.web3.currentProvider.selectedAddress
-    let collectionIndex = 0
+    let collectionIndex = this.Collections.length
     while (collectionIndex >= 0) {
       console.log('collectionIndex', collectionIndex)
       const collectionId = await this.Contract.methods.tokenOfOwnerByIndex(user, collectionIndex).call().catch(() => {
@@ -125,6 +132,32 @@ export default class EthCollections extends EventEmitter {
         this.Collections.push(collectionData)
       }
     }
+  }
+
+  async fetchCollectionsFromIPFS () {
+    const runFetch = async () => {
+      await this.fetchCollectionsPromise
+      const localURIs = (await User.DB.groups.toArray()).map(g => g.URI)
+      const fetchURIs = this.Collections.map(c => c.URI).filter(uri => !localURIs.includes(uri))
+
+      await Promise.all(fetchURIs.map(async URI => {
+        const collection = await IPFS.catJSON(URI)
+        collection.desc = collection.description; delete collection.description
+        const existGroup = await User.DB.groups.where({ URI }).toArray()
+        if (existGroup.length) return
+        const groupId = await User.DB.groups.add({ ...collection, URI, status: 'minted', stamps: collection.items.length })
+        await Promise.all(collection.items.map(item => {
+          item.desc = item.description; delete item.description
+          return User.DB.stamps.add({ ...item, groupId, status: 'minted' })
+        }))
+        return collection
+      }))
+      // await new Promise(resolve => { setTimeout(resolve, 3000) })
+    }
+    // protection of multiple calls
+    if (this.fetchFromIPFSPromise) return this.fetchFromIPFSPromise
+    this.fetchFromIPFSPromise = runFetch()
+    return this.fetchFromIPFSPromise
   }
 
   async getCollections () {
@@ -164,4 +197,4 @@ export default class EthCollections extends EventEmitter {
 
     return depositCollectionTX
   }
-}
+}()

@@ -1,6 +1,6 @@
 import { html, render } from 'lit-html'
 import IPFS from '@model/IPFS'
-import EthCollections from '@model/EthCollections'
+import ethCollections from '@model/EthCollections'
 import User from '@model/User'
 import Router from '@view/Router'
 
@@ -98,7 +98,6 @@ customElements.define('create-collection', class extends HTMLElement {
         return User.DB.stamps.get(stampId)
       }))
 
-      const ethCollections = new EthCollections()
       ethCollections.on('create:status', data => {
         progress.innerText = data.text
       })

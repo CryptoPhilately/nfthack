@@ -2,10 +2,14 @@
 import { html, render } from 'lit-html'
 import User from '@model/User'
 import IPFS from '@model/IPFS'
+import ethCollections from '@model/EthCollections'
 import Router from '@view/Router'
 
 customElements.define('stamps-list', class extends HTMLElement {
   async connectedCallback () {
+    this.innerHTML = '<p class="fetching">Fetching collections from blockchain...</p>'
+    await ethCollections.fetchCollectionsFromIPFS()
+
     const groups = await User.DB.groups.toArray()
     const groupsbyId = groups.reduce((obj, item) => {
       obj[item.id] = item
@@ -32,7 +36,7 @@ customElements.define('stamps-list', class extends HTMLElement {
               <th>Denomination</th>
               <th>Stamps</th>
               <th>URI</th>
-              <th>TX</th>
+              <!-- <th>TX</th> -->
             </tr>
           </thead>
           <tbody>
@@ -45,9 +49,9 @@ customElements.define('stamps-list', class extends HTMLElement {
                   <td>${group.denomination}</td>
                   <td>${group.stamps}</td>
                   <td><a class="uri" href=${IPFS.getLink(group.URI)} target="_blank">${group.URI}</a></td>
-                  <td>
+                  <!-- <td>
                   <a class="uri" href="${User.explorerLink('tx', group.TX)}" target="_blank">${group.TX}</a>
-                  </td>
+                  </td> -->
                 </tr>
               `)}`
               : html`<tr><td class="empty" colspan="7">

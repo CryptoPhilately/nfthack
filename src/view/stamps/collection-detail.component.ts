@@ -3,7 +3,7 @@ import { html, render } from 'lit-html'
 import User from '@model/User'
 import IPFS from '@model/IPFS'
 import Router from '@view/Router'
-import EthCollections from '@model/EthCollections'
+import ethCollections from '@model/EthCollections'
 
 customElements.define('collection-detail', class extends HTMLElement {
   async connectedCallback () {
@@ -17,7 +17,7 @@ customElements.define('collection-detail', class extends HTMLElement {
     // Send collection to blockchain
     const mint = async () => {
       const progress = document.getElementById('mint_progress')
-      const ethCollections = new EthCollections()
+
       ethCollections.on('create:status', data => {
         progress.innerText = data.text
       })
@@ -29,7 +29,6 @@ customElements.define('collection-detail', class extends HTMLElement {
     }
 
     const deposit = async () => {
-      const ethCollections = new EthCollections()
       const tx = await ethCollections.depositCollection(groupId).catch(err => {
         console.error(err)
       })
@@ -50,7 +49,10 @@ customElements.define('collection-detail', class extends HTMLElement {
       <p><b>Denomination</b>: ${group.denomination}</p>
       <p><b>Description</b>: ${group.desc}</p>
       <p><b>URI</b>: <a target="_blank" href="${IPFS.getLink(group.URI)}">${group.URI}</a></p>
-      <p><b>TX</b>: <a target="_blank" href="${User.explorerLink('tx', group.TX)}">${group.TX}</a></p>
+
+      ${(group.TX)
+        ? html`<p><b>TX</b>: <a target="_blank" href="${User.explorerLink('tx', group.TX)}">${group.TX}</a></p>`
+        : html``}
 
       <div class="stamps-list">
         <table>
