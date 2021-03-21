@@ -16,6 +16,7 @@ contract Collections is ICollections, ERC721 {
     IFactory Factory;
 
     struct Collection {
+        string URI;
         bytes32 root;
         uint256 value;
         address stampsContract;
@@ -39,6 +40,7 @@ contract Collections is ICollections, ERC721 {
         IStamps stampsContract = Factory.createStampContract(name, symbol, value != 0);
 
         collections[_currentTokenId] = Collection({
+            URI: URI,
             root: root,
             value: value,
             stampsContract: address(stampsContract),
