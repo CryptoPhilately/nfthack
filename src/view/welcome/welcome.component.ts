@@ -1,4 +1,3 @@
-import config from '@config/index'
 import User from '@model/User'
 import Router from '@view/Router'
 
@@ -33,6 +32,8 @@ customElements.define('welcome-screen', class extends HTMLElement {
     }
 
     // All ok - show user collections
-    Router.navigateTo('/stamps')
+    if (!window.location.pathname.includes('stamps')) {
+      Router.navigateTo('/stamps')
+    }
   }
 })

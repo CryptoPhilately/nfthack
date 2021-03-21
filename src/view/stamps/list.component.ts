@@ -7,19 +7,19 @@ import Router from '@view/Router'
 
 customElements.define('stamps-list', class extends HTMLElement {
   async connectedCallback () {
-    this.innerHTML = '<p class="fetching">Fetching collections from blockchain...</p>'
-    await ethCollections.fetchCollectionsFromIPFS()
+    if (!(await User.DB.groups.toArray()).length) {
+      this.innerHTML = '<p class="fetching">Fetching collections from blockchain...</p>'
+      await ethCollections.fetchCollectionsFromIPFS()
+    }
 
-    const groups = await User.DB.groups.toArray()
+    const [groups, stamps] = await Promise.all([User.DB.groups.toArray(), User.DB.stamps.toArray()])
     const groupsbyId = groups.reduce((obj, item) => {
       obj[item.id] = item
       return obj
     }, {})
-    const stamps = await User.DB.stamps.toArray()
 
     const goTo = function (e) {
       if (['a', 'img'].includes(e.target.tagName.toLowerCase())) return
-
       Router.navigateTo(this.dataset.link)
     }
 
@@ -98,7 +98,7 @@ customElements.define('stamps-list', class extends HTMLElement {
                   </td>
                   <td><a href="/stamps/${stamp.id}">${stamp.name}</a></td>
                   <td>${stamp.denomination}</td>
-                  <td>${groupsbyId[stamp.groupId].name}</td>
+                  <td>${groupsbyId[stamp.groupId]?.name || '-'}</td>
                   <td><a class="uri" href=${IPFS.getLink(stamp.URI)} target="_blank">${stamp.URI}</a></td>
                   <td></td>
                 </tr>

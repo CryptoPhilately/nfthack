@@ -28,7 +28,7 @@ customElements.define('log-in', class extends HTMLElement {
           class="address"><b>${network}</b>: ${showAddress}</a>
       </div>`
 
-      if (User.networkSupported()) {
+      if (User.networkSupported() && !window.location.pathname.includes('/stamps')) {
         Router.navigateTo('/stamps')
       } else {
         Router.navigateTo('/')
