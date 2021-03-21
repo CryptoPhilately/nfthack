@@ -130,15 +130,19 @@ export default new class EthCollections extends EventEmitter {
 
       if (collectionId) {
         collectionIndex++
-        const [collectionData, URI] = await Promise.all([
-          this.Contract.methods.collections(collectionId).call(),
-          this.Contract.methods.tokenURI(collectionId).call()
-        ])
 
-        collectionData.id = collectionId
-        collectionData.index = collectionIndex
-        collectionData.URI = URI.replace('ipfs://', '')
-        this.Collections.push(collectionData)
+        const URI = await this.Contract.methods.tokenURI(collectionId).call()
+
+        let advanced = {}
+        try {
+          advanced = await this.Contract.methods.collections(collectionId).call()
+        } catch (err) { }
+        this.Collections.push({
+          ...advanced,
+          id: collectionId,
+          index: collectionIndex,
+          URI: URI.replace('ipfs://', '')
+        })
       }
     }
   }
