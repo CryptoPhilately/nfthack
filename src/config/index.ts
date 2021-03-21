@@ -22,7 +22,7 @@ export default {
         // mainnet: '',
         // kovan: '',
         // ropsten: '',
-        rinkeby: '0xa84Fdc5a9b1C99c0a61b7bEbBee36Ff054380b06',
+        rinkeby: '0xE936f7304494Fa3f9D2E5Bc35058aeB87f63eBE0',
         // goerli: '',
         localhost: ColletionsLocalAddress
       },

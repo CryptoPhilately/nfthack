@@ -2,7 +2,7 @@
 pragma solidity >=0.7.0;
 
     contract Merkle {
-        function verifyProof(bytes32 leaf, bytes32 root, bytes memory proof) private pure returns (bool) {
+        function verifyProof(bytes32 leaf, bytes32 root, bytes memory proof) external pure returns (bool) {
             bytes32 el;
             bytes32 h = leaf;
 

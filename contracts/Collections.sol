@@ -53,9 +53,8 @@ contract Collections is ICollections, ERC721 {
     function detachItem(uint256 collectionId, uint256 denomination, string calldata itemURI, bytes calldata proof) external override {
         bytes32 itemHash = keccak256(abi.encodePacked(denomination, itemURI));
         Collection storage collection = collections[collectionId];
-        require(_isApprovedOrOwner(msg.sender, collectionId), "");
-        // TODO:
-        // require(Merkle.verifyProof(itemHash, collection.root, proof), "");
+        require(_isApprovedOrOwner(msg.sender, collectionId), "sender is not a owner");
+        require(Merkle.verifyProof(itemHash, collection.root, proof), "Invalid proof");
 
         if (collection.nominated) {
             collection.value = collection.value.sub(denomination);
@@ -70,7 +69,7 @@ contract Collections is ICollections, ERC721 {
         uint256 stampDenomination = IStamps(collection.stampsContract).getDenomination(itemId);
         string memory stampURI = IStamps(collection.stampsContract).tokenURI(itemId);
         bytes32 itemHash = keccak256(abi.encodePacked(stampDenomination, stampURI));
-        require(detachedItems[collectionId][itemHash], "");
+        require(detachedItems[collectionId][itemHash], "The item is not detached");
 
         if (collection.nominated == true) {
             collection.value = collection.value.add(stampDenomination);
