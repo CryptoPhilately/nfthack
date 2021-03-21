@@ -12,16 +12,17 @@ We use [esbuild](https://esbuild.github.io/) for compile .ts/.js files and [styl
 See `./scripts` folder.
 
 ### Run dev mode
-Start frontend
-```
-npm start
-```
-
-Start test network
+Start test network and run migrations.
 ```
 npm run testnet # copy and import provate key to metamask
 npm run migrate # deploy contracts to local network
 ```
+
+Run frontend
+```
+npm start
+```
+
 Use local rpc `localhost::8545` in metamask
 
 

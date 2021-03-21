@@ -1,4 +1,3 @@
-import config from '@config/index'
 import User from '@model/User'
 import Router from '@view/Router'
 
@@ -25,15 +24,17 @@ customElements.define('welcome-screen', class extends HTMLElement {
     }
 
     // check network
-    const network = User.getNetwork()
-    if (!config.contracts.collections.address[network]) {
+    if (!User.networkSupported()) {
       this.innerHTML = `
-        <p>Sorry... Network ${network} is not supported, our contract not deployed...</p>
+        <p>Sorry... Network ${User.getNetwork()} is not supported, our contract not deployed...</p>
+        <p>You can use Rinkeby</p>
       `
       return
     }
 
     // All ok - show user collections
-    Router.navigateTo('/stamps')
+    if (!window.location.pathname.includes('stamps')) {
+      Router.navigateTo('/stamps')
+    }
   }
 })

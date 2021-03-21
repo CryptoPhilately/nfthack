@@ -4,7 +4,7 @@
     position relative
     margin:40px 0 40px 0;
     background #fff;
-    padding:20px 50px 60px 20px;
+    padding:20px 50px 140px 20px;
     border-radius 10px
 
     h1 {
@@ -25,6 +25,44 @@
       b {
         font-weight 200
       }
+    }
+
+
+    #mint_progress {
+      display block
+      position absolute
+      left 40px
+      bottom 35px
+      width calc(100% - 280px)
+      text-align right
+    }
+
+    button.deposit-collection,
+    button.mint-collection {
+      position absolute
+      bottom: 40px
+      right 40px
+      display: inline-block
+      border:none; outline:none;
+      text-decoration none
+      color: #fff;
+      cursor: pointer;
+      border-radius: 5px;
+      background: #f89c36;
+      letter-spacing: 1px;
+      text-transform: uppercase
+      font-size: 14px;
+      font-weight: 500;
+      font-style: normal;
+      padding:7px 12px;
+      &:hover {
+        opacity: 0.95;
+      }
+      push-btn()
+    }
+
+    button.deposit-collection {
+      bottom:auto; top:20px; right:20px;
     }
 }
 
@@ -76,4 +114,55 @@
         text-align right
       }
     }
+}
+
+
+.stamp-info {
+  padding-bottom 100px
+  .image {
+    width: 200px;
+    height: auto;
+    float right
+    margin 0 -10px 0 10px
+  }
+
+  #deposit_progress, #detach_progress {
+    display block
+    position absolute
+    left 40px
+    bottom 35px
+    width calc(100% - 280px)
+    text-align right
+  }
+  #detach_progress {
+    width calc(100% - 350px)
+  }
+
+
+  button {
+    &.loading {
+      pointer-events none
+      filter:grayscale(1)
+    }
+    position absolute
+    bottom: 40px
+    right 40px
+    display: inline-block
+    border:none; outline:none;
+    text-decoration none
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    background: #f89c36;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    font-size: 14px;
+    font-weight: 500;
+    font-style: normal;
+    padding:7px 12px;
+    &:hover {
+      opacity: 0.95;
+    }
+    push-btn()
+  }
 }

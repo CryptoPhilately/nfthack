@@ -7,7 +7,7 @@ const { copy } = require('fs-extra')
 const startTime = Date.now()
 
 const paths = {
-  js: { entry: ['./src/index.js'], out: './public/index.js' },
+  js: { entry: ['./src/app.js'], out: './public/app.js' },
   css: { entry: './src/index.styl', out: './public/styles.css' },
   html: { entry: './src/index.html', out: './public/index.html' },
   static: { entry: './src/assets/', out: './public/assets/' }
@@ -49,7 +49,7 @@ function buildCSS () {
 }
 
 function copyStatic () {
-  return copy(paths.static.entry, paths.static.out).catch(err=>{})
+  return copy(paths.static.entry, paths.static.out).catch(err => { err = null })
 }
 
 function copyHtml () {
