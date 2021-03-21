@@ -236,11 +236,14 @@ export default new class EthCollections extends EventEmitter {
     ).send({ from: this.web3.currentProvider.selectedAddress, to: this.address })
 
     if (TX.transactionHash) {
-      const depositoryAddress = await this.Contract.methods.getDepositoryContract(collection.id).call()
+      const [depositoryAddress, stampsAddress] = await Promise.all([
+        this.Contract.methods.getDepositoryContract(collection.id).call(),
+        this.Contract.methods.getStampsContract(collection.id).call()
+      ])
       await User.DB.stamps.update(stampId, {
         status: 'detached',
         groupId: -1,
-        stampsContractAddress: collection.stampsContract,
+        stampsContractAddress: stampsAddress,
         depositoryContractAddress: depositoryAddress
       })
     }
