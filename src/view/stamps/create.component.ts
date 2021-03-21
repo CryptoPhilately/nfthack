@@ -45,7 +45,7 @@ customElements.define('create-collection', class extends HTMLElement {
       e.preventDefault()
       collectionStamps[e.target.dataset.key] = null
       render(collectionForm(collectionStamps), this)
-      if (collectionStamps.length === 0) {
+      if (collectionStamps.filter(s => !!s).length === 0) {
         addNewStampForm()
       }
     }
@@ -86,7 +86,7 @@ customElements.define('create-collection', class extends HTMLElement {
       })
 
       // Create stamps
-      const stampsDB = await Promise.all(stamps.map(async stamp => {
+      await Promise.all(stamps.map(async stamp => {
         const stampId = await User.DB.stamps.put({
           status: 'draft',
           groupId: groupId,
@@ -98,44 +98,25 @@ customElements.define('create-collection', class extends HTMLElement {
         return User.DB.stamps.get(stampId)
       }))
 
-      const ethCollections = new EthCollections(User.web3, User.getNetwork())
+      const ethCollections = new EthCollections()
       ethCollections.on('create:status', data => {
         progress.innerText = data.text
       })
-      const result = await ethCollections.createCollection({
-        id: groupId,
-        name: data.name,
-        description: data.desc,
-        ticker: data.ticker,
-        denomination: Math.ceil(data.denomination),
-        items: stampsDB.map(stamp => ({
-          id: stamp.id,
-          name: stamp.name,
-          description: stamp.desc,
-          denomination: Math.ceil(stamp.denomination),
-          image: stamp.image
-        }))
-      }).catch(err => {
-        progress.innerText = 'Mint error...'
+      const result = await ethCollections.createCollection(groupId).catch(err => {
         console.error(err)
-        alert('Mint error...')
-        e.target.classList.remove('saving-collection')
+        progress.innerText = 'Mint error...'
       })
-
-      e.target.classList.remove('saving-collection')
 
       if (!result?.transactionHash) {
         progress.innerText = 'Mint error...'
         console.error(result)
         alert('Mint error...')
-        return
+        e.target.classList.remove('saving-collection')
       } else {
-        progress.innerText = 'Collection Succefully minted!'
         console.info('TX', result)
-        await User.DB.groups.update(groupId, { TX: result.transactionHash })
+        progress.innerText = 'Collection Succefully minted!'
+        Router.navigateTo('/stamps/collection/' + groupId)
       }
-
-      Router.navigateTo('/stamps/collection/' + groupId)
     }
 
     const collectionForm = (stamps) => html`<form @submit=${saveCollection}>

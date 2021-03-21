@@ -22,7 +22,7 @@ customElements.define('log-in', class extends HTMLElement {
       const subdomain = (network !== 'mainnet') ? network + '.' : ''
       const showAddress = address.substr(0, 6) + '...' + address.substr(-4)
       this.innerHTML = `<div class="userblock">
-        <a href="https://${subdomain}etherscan.io/address/${address}"
+        <a href="${User.explorerLink('address', address)}"
           target="_blank"
           title="${address} in ${network} network"
           class="address"><b>${network}</b>: ${showAddress}</a>

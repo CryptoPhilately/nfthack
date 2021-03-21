@@ -119,3 +119,4 @@ dist
 # Truffle artifacts
 build/contracts
 src/config/contract_address.txt
+.firebase/hosting.cHVibGlj.cache

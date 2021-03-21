@@ -19,12 +19,6 @@ customElements.define('stamps-list', class extends HTMLElement {
       Router.navigateTo(this.dataset.link)
     }
 
-    const txLink = tx => {
-      const network = User.getNetwork()
-      const subdomain = (network !== 'mainnet') ? network + '.' : ''
-      return `https://${subdomain}etherscan.io/tx/${tx}`
-    }
-
     const stampsTables = (groupsList, stampsList) => html`
       <div class="groups-list">
         <a class="add" href="/stamps/create-collection">Create collection</a>
@@ -52,7 +46,7 @@ customElements.define('stamps-list', class extends HTMLElement {
                   <td>${group.stamps}</td>
                   <td><a class="uri" href=${IPFS.getLink(group.URI)} target="_blank">${group.URI}</a></td>
                   <td>
-                  <a class="uri" href="${txLink(group.TX)}" target="_blank">${group.TX}</a>
+                  <a class="uri" href="${User.explorerLink('tx', group.TX)}" target="_blank">${group.TX}</a>
                   </td>
                 </tr>
               `)}`

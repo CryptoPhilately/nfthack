@@ -17,6 +17,7 @@ customElements.define('stamp-detail', class extends HTMLElement {
       <h1><i class="status ${stamp.status}">${stamp.status}</i> ${stamp.name}</h1>
       <p>${stamp.desc}</p>
       <p><br></p>
+      <p><b>Denomination</b>: ${stamp.denomination}</p>
       <p><b>Collection</b>: <a href="/stamps/collection/${group.id}">${group.name}</a></p>
       <p><b>Image</b>:
         <a class="uri" href=${IPFS.getLink(stamp.image)} target="_blank">
@@ -24,7 +25,8 @@ customElements.define('stamp-detail', class extends HTMLElement {
           <!-- <img src=${IPFS.getLink(stamp.image)} /> -->
         </a>
       </p>
-      <p><b>Denomination</b>: ${stamp.denomination}</p>
+      <p><b>URI</b>: <a target="_blank" href="${IPFS.getLink(stamp.URI)}">${stamp.URI}</a></p>
+
     </div>`
 
     render(stampDetail(group), this)

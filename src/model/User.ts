@@ -94,4 +94,12 @@ export default new class User extends EventEmitter {
   getNetwork () {
     return config.chains[window.ethereum.chainId] || 'localhost'
   }
+
+  explorerLink (type, address) {
+    const network = this.getNetwork()
+    // if (network === 'localhost') { return `#${type}/${address}` }
+
+    const subdomain = (network !== 'mainnet') ? network + '.' : ''
+    return `https://${subdomain}etherscan.io/${type}/${address}`
+  }
 }()

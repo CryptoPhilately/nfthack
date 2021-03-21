@@ -1,4 +1,6 @@
 import collectionsABI from './CollectionsABI.json'
+import depositoryABI from './DepositoryABI.json'
+import stampsABI from './StampsABI.json'
 import { address as ColletionsLocalAddress } from './ColletionsLocalAddress.json'
 export default {
   ipfsGateway: { host: 'ipfs.infura.io', port: 5001, protocol: 'https' },
@@ -13,6 +15,8 @@ export default {
   },
 
   contracts: {
+    stamps: { abi: stampsABI },
+    depository: { abi: depositoryABI },
     collections: {
       address: {
         // mainnet: '',

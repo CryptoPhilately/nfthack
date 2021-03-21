@@ -7,11 +7,14 @@ import { web3soliditySha3 } from '@model/merkle/utils'
 
 export default class EthCollections extends EventEmitter {
   private web3:any
+  private fetchCollectionsPromise:Promise<any>
+  public Collections:any[] = []
   public Contract:any
   public address:string
-  constructor (web3, network) {
+  constructor () {
     super()
-    this.web3 = web3
+    this.web3 = User.web3
+    const network = User.getNetwork()
     const { abi, address } = config.contracts.collections
 
     if (!address[network]) {
@@ -20,49 +23,65 @@ export default class EthCollections extends EventEmitter {
     }
     this.address = address[network]
     this.Contract = new this.web3.eth.Contract(abi, this.address)
+
+    this.fetchCollectionsPromise = this.fetchCollections()
   }
 
-  async createCollection ({ id, name, description, ticker, denomination, items }) {
-    console.info('Create collection', { id, name, description, ticker, denomination, items })
-    const collectionData:any = { name, description, ticker, denomination, items: [] }
+  // Save data to IPFS
+  // and send CID to blockchain
+  async createCollection (groupId:number):Promise<any> {
+    const [group, stamps] = await Promise.all([
+      User.DB.groups.get(groupId),
+      User.DB.stamps.where({ groupId }).toArray()
+    ])
 
     // Upload items to IPFS
-    console.info('Upload items to IPFS')
     this.emit('create:status', { text: 'Uploading items to IPFS' })
-    collectionData.items = await Promise.all(items.map(async item => {
-      const data4ipfs = {
-        name: item.name,
-        description: item.description,
-        denomination: item.denomination,
-        image: item.image
-      }
-      item.URI = await IPFS.addJSON(data4ipfs)
-      console.info(`Item ${item.id} uploaded, ${item.URI}`)
-      item.status = 'ipfs'
-      await User.DB.stamps.update(item.id, item)
-      return { URI: item.URI, ...data4ipfs }
-    }))
+    // @TODO: write types for this Object
+    const collectionData:any = {
+      name: group.name,
+      description: group.desc,
+      ticker: group.ticker,
+
+      denomination: stamps.reduce((sum, stamp) => {
+        sum += Math.ceil(Number(stamp.denomination))
+        return sum
+      }, 0),
+
+      items: await Promise.all(stamps.map(async item => {
+        const data4ipfs = {
+          name: item.name,
+          description: item.desc,
+          denomination: item.denomination,
+          image: item.image
+        }
+        // save item to ipfs
+        item.URI = await IPFS.addJSON(data4ipfs)
+        console.info(`Item ${item.id} uploaded, ${item.URI}`)
+        item.status = 'ipfs'
+        // write uri to local DB
+        User.DB.stamps.update(item.id, item)
+        return { URI: item.URI, ...data4ipfs }
+      }))
+    }
 
     this.emit('create:status', { text: 'Items uploaed' })
-    console.info(`All ${items.length} items uploaded`, collectionData.items)
+    console.info(`All ${collectionData.items.length} items uploaded`, collectionData.items)
 
     // Upload collection data to IPFS
     this.emit('create:status', { text: 'Upload collection data to IPFS' })
     console.info('Upload collection to IPFS', collectionData)
     collectionData.URI = await IPFS.addJSON(collectionData)
     console.info('Collection data uploaded', collectionData.URI)
-    await User.DB.groups.update(id, { status: 'ipfs', URI: collectionData.URI })
+    User.DB.groups.update(groupId, { status: 'ipfs', URI: collectionData.URI })
     this.emit('create:status', { text: 'Collection uploaded' })
 
     // Generate merkle tree
     console.info('Create merkle elements')
-    const merkleElements = collectionData.items.map(item => {
-      console.log('web3soliditySha3', item.denomination, item.URI)
-      return web3soliditySha3(
-        { v: Math.ceil(item.denomination), t: 'uint256' },
-        { v: item.URI, t: 'string' }
-      )
-    })
+    const merkleElements = collectionData.items.map(item => web3soliditySha3(
+      { v: Math.ceil(item.denomination), t: 'uint256' },
+      { v: item.URI, t: 'string' }
+    ))
     const merkleRoot = (new MerkleTree(merkleElements, false)).getRootHex()
     console.info('merkleRoot', merkleRoot)
 
@@ -80,8 +99,69 @@ export default class EthCollections extends EventEmitter {
 
     this.emit('create:status', { text: 'Transaction sended' })
 
-    await User.DB.groups.update(id, { status: 'minted' })
+    if (TX?.transactionHash) {
+      await User.DB.groups.update(groupId, { status: 'minted', TX: TX.transactionHash, txdata: TX })
+    }
 
     return TX
+  }
+
+  // get collections from smart contract
+  async fetchCollections () {
+    const user = this.web3.currentProvider.selectedAddress
+    let collectionIndex = 0
+    while (collectionIndex >= 0) {
+      console.log('collectionIndex', collectionIndex)
+      const collectionId = await this.Contract.methods.tokenOfOwnerByIndex(user, collectionIndex).call().catch(() => {
+        collectionIndex = -10
+      })
+      collectionIndex++
+
+      if (collectionId) {
+        const collectionData = await this.Contract.methods.collections(collectionId).call()
+        collectionData.id = collectionId
+        collectionData.index = collectionIndex
+        collectionData.URI = collectionData.URI.replace('ipfs://', '')
+        this.Collections.push(collectionData)
+      }
+    }
+  }
+
+  async getCollections () {
+    await this.fetchCollectionsPromise
+    return this.Collections
+  }
+
+  async getCollectionByURI (uri) {
+    await this.fetchCollectionsPromise
+    return this.Collections.find(col => col.URI === uri)
+  }
+
+  async depositCollection (groupId:number):Promise<any> {
+    const user = this.web3.currentProvider.selectedAddress
+    const group = await User.DB.groups.get(groupId)
+    const collection = await this.getCollectionByURI(group.URI)
+    if (!collection) {
+      alert('Collection not found in contract')
+      return
+    }
+
+    const depositoryAddress = await this.Contract.methods.getDepositoryContract(collection.id).call()
+    const depositoryContract = new this.web3.eth.Contract(config.contracts.depository.abi, depositoryAddress)
+    const approveDepositoryTX = await this.Contract.methods.approve(depositoryAddress, collection.id).send({ from: user, to: this.address })
+    console.info({ approveDepositoryTX })
+
+    const depositCollectionTX = await depositoryContract.methods.depositCollection(collection.id).send({
+      from: user, to: depositoryAddress, gasLimit: 5400000
+    }).catch(err => {
+      console.error('depositCollectionTX', err)
+    })
+    console.info({ depositCollectionTX })
+
+    if (depositCollectionTX?.transactionHash) {
+      await User.DB.groups.update(groupId, { status: 'deposited' })
+    }
+
+    return depositCollectionTX
   }
 }
