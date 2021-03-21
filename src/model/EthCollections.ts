@@ -240,6 +240,7 @@ export default new class EthCollections extends EventEmitter {
       throw new Error('Cant create proof')
     }
 
+    console.info('detachItem Tx data', collection.id, denomination2tokens(stamp.denomination), stamp.URI, proof, { from: this.web3.currentProvider.selectedAddress, to: this.address })
     const TX = await this.Contract.methods.detachItem(
       collection.id,
       denomination2tokens(stamp.denomination),
