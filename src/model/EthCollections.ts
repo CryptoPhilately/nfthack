@@ -235,7 +235,10 @@ export default new class EthCollections extends EventEmitter {
       throw new Error(`Collection not found (URI ${group.URI})`)
     }
 
-    const proof = (new MerkleTree(stamps.map(i => this.itemForMerkleTree(i)), false)).getProofHex(this.itemForMerkleTree(stamp))[0]
+    const proofArr = (new MerkleTree(stamps.map(i => this.itemForMerkleTree(i)), false)).getProofHex(this.itemForMerkleTree(stamp))
+    console.log('proofArr',proofArr);
+
+    const proof = '0x' + proofArr.map(p => p.substr(2)).join('')
     if (!proof) {
       throw new Error('Cant create proof')
     }
