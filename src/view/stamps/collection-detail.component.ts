@@ -13,6 +13,7 @@ customElements.define('collection-detail', class extends HTMLElement {
       Router.navigateTo('/stamps')
     }
     const stamps = await User.DB.stamps.where({ groupId }).toArray()
+    const collection = await ethCollections.getCollectionByURI(group.URI)
 
     // Send collection to blockchain
     const mint = async () => {
@@ -49,6 +50,7 @@ customElements.define('collection-detail', class extends HTMLElement {
       <p><b>Denomination</b>: ${group.denomination}</p>
       <p><b>Description</b>: ${group.desc}</p>
       <p><b>URI</b>: <a target="_blank" href="${IPFS.getLink(group.URI)}">${group.URI}</a></p>
+      <p><b>Root</b>: ${collection.root}</p>
 
       ${(group.TX)
         ? html`<p><b>TX</b>: <a target="_blank" href="${User.explorerLink('tx', group.TX)}">${group.TX}</a></p>`
@@ -101,6 +103,6 @@ customElements.define('collection-detail', class extends HTMLElement {
 
     </div>`
 
-    render(collectionDetail(group), this)
+    render(collectionDetail(group, collection), this)
   }
 })

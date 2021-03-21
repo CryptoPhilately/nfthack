@@ -14,4 +14,9 @@ IPFS.uploadImageAsSvg = async function (dataURI:string) {
   return { CID, link }
 }
 
+IPFS.getImage = async function (CID) {
+  const svg = await IPFS.cat(CID)
+  return svg?.split('<image href="')[1]?.split('"')[0] || ''
+}
+
 export default IPFS

@@ -11,9 +11,18 @@ html, body {
   & * {
     user-select none
     box-sizing border-box
+    user-drag: none;
   }
 
-  p, p * { user-select: all; }
+  // https://gist.github.com/msuchodolski/41c9338f3a732379dc570142826ed76e
+  *, *::after, *::before {
+    app-region: no-drag; user-select: text; user-drag: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-app-region: no-drag;
+  }
+
+  p, p * { user-select: text; user-drag: none; }
 }
 
 a {

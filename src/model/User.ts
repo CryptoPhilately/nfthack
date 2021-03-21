@@ -11,15 +11,15 @@ declare global {
 
 const isConnectedPromise = new Promise(resolve => {
   if (!localStorage.currentAddress || localStorage.currentAddress === 'null') resolve(null)
-  if (window.ethereum.selectedAddress) resolve(window.ethereum.chainId)
-  window.ethereum.on('connect', data => {
+  if (window.ethereum?.selectedAddress) resolve(window.ethereum.chainId)
+  window.ethereum?.on('connect', data => {
     console.info('ethereum.on(connect')
     setTimeout(() => {
       resolve(data)
     }, 100)
   })
 
-  window.ethereum._metamask.isUnlocked().then(unlocked => {
+  window.ethereum?._metamask.isUnlocked().then(unlocked => {
     if (!unlocked) {
       console.info('MetaMask is locked')
       delete localStorage.currentAddress

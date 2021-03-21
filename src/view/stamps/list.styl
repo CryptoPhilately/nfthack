@@ -49,6 +49,7 @@ stamps-list {
     table {
       border-collapse collapse
       width 100%
+
       caption {
         text-align left
         font-weight 200
@@ -60,11 +61,27 @@ stamps-list {
         font-weight 200
         font-size 12px
       }
-      th,td {
+      th, td {
         text-align left
         padding:10px 15px;
-        vertical-align top
+        // vertical-align top
       }
+
+      td {
+        vertical-align center
+      }
+
+      td.image {
+        img {
+          margin 0 auto
+          width: 70px
+          height : 50px
+          object-fit: cover
+          border-radius 5px
+          overflow hidden
+        }
+      }
+
       td.empty {
         text-align center
         padding 50px 30px

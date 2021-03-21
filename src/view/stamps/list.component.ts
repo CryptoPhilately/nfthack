@@ -18,7 +18,7 @@ customElements.define('stamps-list', class extends HTMLElement {
     const stamps = await User.DB.stamps.toArray()
 
     const goTo = function (e) {
-      if (e.target.tagName.toLowerCase() === 'a') return
+      if (['a', 'img'].includes(e.target.tagName.toLowerCase())) return
 
       Router.navigateTo(this.dataset.link)
     }
@@ -47,7 +47,7 @@ customElements.define('stamps-list', class extends HTMLElement {
                   <td>${group.ticker}</td>
                   <td><a href="/stamps/collection/${group.id}">${group.name}</a></td>
                   <td>${group.denomination}</td>
-                  <td>${group.stamps}</td>
+                  <td class="stamps">${group.stamps}</td>
                   <td><a class="uri" href=${IPFS.getLink(group.URI)} target="_blank">${group.URI}</a></td>
                   <!-- <td>
                   <a class="uri" href="${User.explorerLink('tx', group.TX)}" target="_blank">${group.TX}</a>
@@ -78,7 +78,7 @@ customElements.define('stamps-list', class extends HTMLElement {
           <thead>
             <tr>
               <th>Status</th>
-              <th>Image</th>
+              <th class="image">Image</th>
               <th>Name</th>
               <th>Denomination</th>
               <th>Collection</th>
@@ -92,9 +92,8 @@ customElements.define('stamps-list', class extends HTMLElement {
                 <tr class="item" data-link="/stamps/${stamp.id}" @click=${goTo}>
                   <td><i class="status ${stamp.status}">${stamp.status}</i></td>
                   <td class="image">
-                    <a class="uri" href=${IPFS.getLink(stamp.image)} target="_blank">
-                      ${stamp.image}
-                      <!-- <img src=${IPFS.getLink(stamp.image)} /> -->
+                    <a href=${IPFS.getLink(stamp.image)} target="_blank" id="stamp_${stamp.id}_image">
+                      <img src="${stamp.imageUri}">
                     </a>
                   </td>
                   <td><a href="/stamps/${stamp.id}">${stamp.name}</a></td>
@@ -121,5 +120,18 @@ customElements.define('stamps-list', class extends HTMLElement {
     `
 
     render(stampsTables(groups, stamps), this)
+
+    // Load images
+    stamps.forEach(async stamp => {
+      if (stamp.imageUri) return
+      const img = await IPFS.getImage(stamp.image)
+      if (!img) return
+      const link = document.getElementById(`stamp_${stamp.id}_image`)
+      link.innerHTML = `
+        <img id="stamp_${stamp.id}_image" src="${img}" />
+      `
+      link.classList.remove('uri')
+      User.DB.stamps.update(stamp.id, { imageUri: img })
+    })
   }
 })
