@@ -50,7 +50,7 @@ customElements.define('collection-detail', class extends HTMLElement {
       <p><b>Denomination</b>: ${group.denomination}</p>
       <p><b>Description</b>: ${group.desc}</p>
       <p><b>URI</b>: <a target="_blank" href="${IPFS.getLink(group.URI)}">${group.URI}</a></p>
-      <p><b>Root</b>: ${collection.root}</p>
+      <p><b>Root</b>: ${collection?.root}</p>
 
       ${(group.TX)
         ? html`<p><b>TX</b>: <a target="_blank" href="${User.explorerLink('tx', group.TX)}">${group.TX}</a></p>`

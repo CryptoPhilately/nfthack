@@ -15,17 +15,22 @@ customElements.define('stamp-detail', class extends HTMLElement {
 
     const stampDetail = group => html`<div class="stamp-info">
       <h1><i class="status ${stamp.status}">${stamp.status}</i> ${stamp.name}</h1>
-      <p>${stamp.desc}</p>
-      <p><br></p>
+
+      <a href=${IPFS.getLink(stamp.image)} target="_blank">
+        <img class="image" src=${stamp.imageUri} >
+      </a>
+
       <p><b>Denomination</b>: ${stamp.denomination}</p>
       <p><b>Collection</b>: <a href="/stamps/collection/${group.id}">${group.name}</a></p>
       <p><b>Image</b>:
-        <a class="uri" href=${IPFS.getLink(stamp.image)} target="_blank">
+        <a href=${IPFS.getLink(stamp.image)} target="_blank">
           ${stamp.image}
-          <!-- <img src=${IPFS.getLink(stamp.image)} /> -->
         </a>
       </p>
       <p><b>URI</b>: <a target="_blank" href="${IPFS.getLink(stamp.URI)}">${stamp.URI}</a></p>
+
+      <p style="cleat:both"><br></p>
+      <p>${stamp.desc}</p>
 
     </div>`
 

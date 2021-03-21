@@ -105,8 +105,11 @@ export default new class EthCollections extends EventEmitter {
     this.emit('create:status', { text: 'Transaction sended' })
 
     if (TX?.transactionHash) {
-      await User.DB.groups.update(groupId, { status: 'minted', TX: TX.transactionHash, txdata: TX })
       this.fetchCollectionsPromise = this.fetchCollections()
+      await Promise.all([
+        User.DB.groups.update(groupId, { status: 'minted', TX: TX.transactionHash, txdata: TX }),
+        ...stamps.map(stamp => User.DB.stamps.update(stamp.id, { status: 'minted' }))
+      ])
     }
 
     return TX

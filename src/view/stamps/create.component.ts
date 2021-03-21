@@ -35,6 +35,7 @@ customElements.define('create-collection', class extends HTMLElement {
         console.info('Image uploaded', fileData.link)
         document.getElementById(`stamp_${stampIndex}_image`).value = fileData.CID
         collectionStamps[stampIndex].image = fileData.CID
+        collectionStamps[stampIndex].imageUri = reader.result
         fieldset.classList.remove('uploading-image')
         addNewStampForm()
       }
@@ -93,7 +94,8 @@ customElements.define('create-collection', class extends HTMLElement {
           desc: stamp.desc,
           denomination: Math.ceil(Number(stamp.denomination)),
           name: stamp.name,
-          image: stamp.image
+          image: stamp.image,
+          imageUri: stamp.imageUri
         })
         return User.DB.stamps.get(stampId)
       }))

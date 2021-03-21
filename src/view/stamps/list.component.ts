@@ -92,8 +92,8 @@ customElements.define('stamps-list', class extends HTMLElement {
                 <tr class="item" data-link="/stamps/${stamp.id}" @click=${goTo}>
                   <td><i class="status ${stamp.status}">${stamp.status}</i></td>
                   <td class="image">
-                    <a href=${IPFS.getLink(stamp.image)} target="_blank" id="stamp_${stamp.id}_image">
-                      <img src="${stamp.imageUri}">
+                    <a href=${IPFS.getLink(stamp.image)} target="_blank">
+                      <img src="${stamp.imageUri}" id="stamp_${stamp.id}_image">
                     </a>
                   </td>
                   <td><a href="/stamps/${stamp.id}">${stamp.name}</a></td>
@@ -124,14 +124,11 @@ customElements.define('stamps-list', class extends HTMLElement {
     // Load images
     stamps.forEach(async stamp => {
       if (stamp.imageUri) return
-      const img = await IPFS.getImage(stamp.image)
-      if (!img) return
-      const link = document.getElementById(`stamp_${stamp.id}_image`)
-      link.innerHTML = `
-        <img id="stamp_${stamp.id}_image" src="${img}" />
-      `
-      link.classList.remove('uri')
-      User.DB.stamps.update(stamp.id, { imageUri: img })
+      const datauri = await IPFS.getImage(stamp.image)
+      if (!datauri) return
+      const img = document.getElementById(`stamp_${stamp.id}_image`)
+      img.src = datauri
+      User.DB.stamps.update(stamp.id, { imageUri: datauri })
     })
   }
 })
