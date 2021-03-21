@@ -14,7 +14,7 @@ pragma solidity >=0.7.0;
                 if (h < el) {
                     h = keccak256(abi.encodePacked(h, el));
                 } else {
-                    h = keccak256(abi.encodePacked(h, el));
+                    h = keccak256(abi.encodePacked(el, h));
                 }
             }
 
