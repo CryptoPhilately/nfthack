@@ -1,7 +1,9 @@
 // import { encodePacked, hexToBytes, soliditySha3 } from 'web3-utils'
 import { Buffer } from 'buffer'
-const { encodePacked, hexToBytes, soliditySha3 } = window.Web3.utils
+const { encodePacked, hexToBytes, soliditySha3, toWei, fromWei } = window.Web3.utils
 
+export const web3toWei = toWei
+export const web3fromWei = fromWei
 export const web3hexToBytes = hexToBytes
 export const web3soliditySha3 = soliditySha3
 

@@ -3,7 +3,14 @@ import EventEmitter from './EventEmitter'
 import IPFS from '@model/IPFS'
 import User from '@model/User'
 import MerkleTree from '@model/merkle/index'
-import { web3soliditySha3 } from '@model/merkle/utils'
+import { web3soliditySha3, web3toWei, web3fromWei } from '@model/merkle/utils'
+
+const denomination2tokens = function (denomination) {
+  return web3toWei(String(denomination), 'ether') // return String(Math.ceil(denomination * 10 ** 18))
+}
+const tokens2denomination = function (token) {
+  return Number(web3fromWei(String(token), 'ether')) // return Number(token) / 10 ** 18
+}
 
 export default new class EthCollections extends EventEmitter {
   private web3:any
@@ -82,6 +89,8 @@ export default new class EthCollections extends EventEmitter {
     this.emit('create:status', { text: 'Collection uploaded' })
 
     // Generate merkle tree
+    console.log('denomination', collectionData.items.map(i => denomination2tokens(i.denomination)))
+
     console.info('Create merkle elements')
     const merkleElements = collectionData.items.map(i => this.itemForMerkleTree(i))
     const merkleRoot = (new MerkleTree(merkleElements, false)).getRootHex()
@@ -94,7 +103,7 @@ export default new class EthCollections extends EventEmitter {
     const TX = await this.Contract.methods.createCollection(
       collectionData.name,
       collectionData.ticker,
-      collectionData.denomination,
+      denomination2tokens(collectionData.denomination),
       merkleRoot,
       'ipfs://' + collectionData.URI
     ).send({ from: this.web3.currentProvider.selectedAddress, to: this.address })
@@ -114,7 +123,7 @@ export default new class EthCollections extends EventEmitter {
 
   itemForMerkleTree ({ denomination, URI }) {
     return web3soliditySha3(
-      { v: Math.ceil(denomination), t: 'uint256' },
+      { v: denomination2tokens(denomination), t: 'uint256' },
       { v: URI, t: 'string' }
     )
   }
@@ -128,7 +137,10 @@ export default new class EthCollections extends EventEmitter {
         collectionIndex = -10
       })
 
-      if (collectionId) {
+      console.info('fetch collection', collectionIndex)
+      if (!collectionId) {
+        collectionIndex = -10
+      } else {
         collectionIndex++
 
         const URI = await this.Contract.methods.tokenURI(collectionId).call()
@@ -228,9 +240,10 @@ export default new class EthCollections extends EventEmitter {
       throw new Error('Cant create proof')
     }
 
+    console.info('detachItem Tx data', collection.id, denomination2tokens(stamp.denomination), stamp.URI, proof, { from: this.web3.currentProvider.selectedAddress, to: this.address })
     const TX = await this.Contract.methods.detachItem(
       collection.id,
-      stamp.denomination,
+      denomination2tokens(stamp.denomination),
       stamp.URI,
       proof
     ).send({ from: this.web3.currentProvider.selectedAddress, to: this.address })
