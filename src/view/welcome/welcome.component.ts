@@ -25,10 +25,9 @@ customElements.define('welcome-screen', class extends HTMLElement {
     }
 
     // check network
-    const network = User.getNetwork()
-    if (!config.contracts.collections.address[network]) {
+    if (!User.networkSupported()) {
       this.innerHTML = `
-        <p>Sorry... Network ${network} is not supported, our contract not deployed...</p>
+        <p>Sorry... Network ${User.getNetwork()} is not supported, our contract not deployed...</p>
       `
       return
     }

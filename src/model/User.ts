@@ -95,6 +95,10 @@ export default new class User extends EventEmitter {
     return config.chains[window.ethereum.chainId] || 'localhost'
   }
 
+  networkSupported () {
+    return !!config.contracts.collections.address[this.getNetwork()]
+  }
+
   explorerLink (type, address) {
     const network = this.getNetwork()
     // if (network === 'localhost') { return `#${type}/${address}` }

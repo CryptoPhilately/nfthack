@@ -27,7 +27,12 @@ customElements.define('log-in', class extends HTMLElement {
           title="${address} in ${network} network"
           class="address"><b>${network}</b>: ${showAddress}</a>
       </div>`
-      Router.navigateTo('/stamps')
+
+      if (User.networkSupported()) {
+        Router.navigateTo('/stamps')
+      } else {
+        Router.navigateTo('/')
+      }
     })
   }
 })

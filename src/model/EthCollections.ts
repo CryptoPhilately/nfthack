@@ -21,7 +21,7 @@ export default new class EthCollections extends EventEmitter {
       const network = User.getNetwork()
 
       if (!address[network]) {
-        alert(`Network ${network} not supported, contract not deployed...`)
+        // alert(`Network ${network} not supported, contract not deployed...`)
         return
       }
       this.address = address[network]
