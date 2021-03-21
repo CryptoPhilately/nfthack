@@ -27,6 +27,7 @@ customElements.define('welcome-screen', class extends HTMLElement {
     if (!User.networkSupported()) {
       this.innerHTML = `
         <p>Sorry... Network ${User.getNetwork()} is not supported, our contract not deployed...</p>
+        <p>You can use Rinkeby</p>
       `
       return
     }
