@@ -1,21 +1,18 @@
 import { html, render } from 'lit-html'
 import IPFS from '@model/IPFS'
+import ethCollections from '@model/EthCollections'
 import User from '@model/User'
 import Router from '@view/Router'
 
 customElements.define('create-collection', class extends HTMLElement {
   async connectedCallback () {
-    let collectionStamps = [{
-      name: '',
-      denomination: '',
-      desc: '',
-      image: ''
-    }]
+    const emptyStamp = { name: '', denomination: '', desc: '', image: '' }
+    let collectionStamps = [{ ...emptyStamp }]
 
     // if all forms filled add new stamp form
     const addNewStampForm = () => {
-      const filteredStamps = collectionStamps.filter(stamp => !(!stamp.name && !stamp.desc && !stamp.image && !stamp.denomination))
-      filteredStamps.push({})
+      const filteredStamps = collectionStamps.filter(stamp => !(stamp && !stamp.name && !stamp.desc && !stamp.image && !stamp.denomination))
+      filteredStamps.push({ ...emptyStamp })
       if (filteredStamps.length === collectionStamps.length) {
         return
       }
@@ -38,10 +35,20 @@ customElements.define('create-collection', class extends HTMLElement {
         console.info('Image uploaded', fileData.link)
         document.getElementById(`stamp_${stampIndex}_image`).value = fileData.CID
         collectionStamps[stampIndex].image = fileData.CID
+        collectionStamps[stampIndex].imageUri = reader.result
         fieldset.classList.remove('uploading-image')
         addNewStampForm()
       }
       reader.readAsDataURL(this.files[0])
+    }
+
+    const removeStamp = e => {
+      e.preventDefault()
+      collectionStamps[e.target.dataset.key] = null
+      render(collectionForm(collectionStamps), this)
+      if (collectionStamps.filter(s => !!s).length === 0) {
+        addNewStampForm()
+      }
     }
 
     // Change stamp field
@@ -57,45 +64,73 @@ customElements.define('create-collection', class extends HTMLElement {
     // Save collection
     const saveCollection = async e => {
       e.preventDefault()
+      e.target.classList.add('saving-collection')
+      const progress = document.getElementById('mint_progress')
+      const stamps = collectionStamps.filter(stamp => !!stamp.image)
       const data = Object.fromEntries(new FormData(e.target))
 
+      // Collection demonimation - sum of stamps denomination
+      data.denomination = stamps.reduce((sum, s) => {
+        sum += Math.ceil(Number(s.denomination))
+        return sum
+      }, 0)
+
+      progress.innerText = 'Save in local Database'
       // Create group in DB
       const groupId = await User.DB.groups.put({
         status: 'draft',
         desc: data.desc,
-        denomination: data.denomination,
+        denomination: Math.ceil(data.denomination),
         name: data.name,
-        ticker: data.ticker
+        ticker: data.ticker,
+        stamps: stamps.length
       })
 
       // Create stamps
-      await Promise.all(collectionStamps.map(stamp => {
-        return User.DB.stamps.put({
+      await Promise.all(stamps.map(async stamp => {
+        const stampId = await User.DB.stamps.put({
           status: 'draft',
           groupId: groupId,
           desc: stamp.desc,
-          denomination: stamp.denomination,
+          denomination: Math.ceil(Number(stamp.denomination)),
           name: stamp.name,
-          image: stamp.image
+          image: stamp.image,
+          imageUri: stamp.imageUri
         })
+        return User.DB.stamps.get(stampId)
       }))
 
-      if (groupId) {
-        Router.navigateTo('/stamps')
+      ethCollections.on('create:status', data => {
+        progress.innerText = data.text
+      })
+      const result = await ethCollections.createCollection(groupId).catch(err => {
+        console.error(err)
+        progress.innerText = 'Mint error...'
+      })
+
+      if (!result?.transactionHash) {
+        progress.innerText = 'Mint error...'
+        console.error(result)
+        alert('Mint error...')
+        e.target.classList.remove('saving-collection')
+      } else {
+        console.info('TX', result)
+        progress.innerText = 'Collection Succefully minted!'
+        Router.navigateTo('/stamps/collection/' + groupId)
       }
     }
 
-    const collectionForm = (stamps) => html`
-      <form @submit=${saveCollection}>
+    const collectionForm = (stamps) => html`<form @submit=${saveCollection}>
       <legend>Create new collection</legend>
       <input name="ticker" type="text" placeholder="Token ticker" minlength="2" maxlength="99" required>
-      <input name="denomination" type="number" placeholder="Denomination" min="0.01" max="999999999999" step="0.01" required>
+      <!-- <input name="denomination" type="number" placeholder="Denomination" min="1" max="999999999999" step="1" required> -->
       <input name="name" type="text" placeholder="Name" minlength="1" required>
       <textarea name="desc" type="text" placeholder="Description" minlength="1"></textarea>
 
       <br>
       <legend>Stamps</legend>
       <div class="stamps-list">${html`${stamps.map((stamp, key) => {
+        if (!stamp) return ''
         const required = (key === 0 && key !== stamps.length - 1)
         return html`<fieldset class="add-stamp stamp-${key}">
           <label class="filepicker">
@@ -107,20 +142,20 @@ customElements.define('create-collection', class extends HTMLElement {
               @change=${uploadImage}
               ?required=${required}
               >
-            <img id="preview${key}" class="preview">
+            <img id="preview${key}" class="preview" src="" >
           </label>
 
           <input name="stamp[${key}].name" @input=${stampSet} data-key=${key} data-field="name" type="text" placeholder="Name" minlength="1" ?required=${required}>
-          <input name="stamp[${key}].denomination" @input=${stampSet} data-key=${key} data-field="denomination" type="number" placeholder="Denomination" min="0.01" max="999999999999" step="0.01" ?required=${required} >
+          <input name="stamp[${key}].denomination" @input=${stampSet} data-key=${key} data-field="denomination" type="number" placeholder="Denomination" min="1" max="999999999999" step="1" ?required=${required} >
           <textarea name="stamp[${key}].desc" @input=${stampSet} data-key=${key} data-field="desc" type="text" placeholder="Description" minlength="5"></textarea>
           <input name="stamp[${key}].image" id="stamp_${key}_image" class="ipfs-link" type="hidden" readonly  placeholder="image in ipfs" ?required=${required} >
+          <button @click=${removeStamp} data-key=${key}> &times; remove</button>
         </fieldset>`
       })}`}</div>
 
-
-      <input type="submit" value="Save collection draft">
-      <form>
-    `
+      <p id="mint_progress"></p>
+      <input type="submit" value="Mint collection">
+    </form>`
 
     render(collectionForm(collectionStamps), this)
   }

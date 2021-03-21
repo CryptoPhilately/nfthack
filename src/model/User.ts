@@ -11,15 +11,15 @@ declare global {
 
 const isConnectedPromise = new Promise(resolve => {
   if (!localStorage.currentAddress || localStorage.currentAddress === 'null') resolve(null)
-  if (window.ethereum.selectedAddress) resolve(window.ethereum.chainId)
-  window.ethereum.on('connect', data => {
+  if (window.ethereum?.selectedAddress) resolve(window.ethereum.chainId)
+  window.ethereum?.on('connect', data => {
     console.info('ethereum.on(connect')
     setTimeout(() => {
       resolve(data)
     }, 100)
   })
 
-  window.ethereum._metamask.isUnlocked().then(unlocked => {
+  window.ethereum?._metamask.isUnlocked().then(unlocked => {
     if (!unlocked) {
       console.info('MetaMask is locked')
       delete localStorage.currentAddress
@@ -93,5 +93,17 @@ export default new class User extends EventEmitter {
 
   getNetwork () {
     return config.chains[window.ethereum.chainId] || 'localhost'
+  }
+
+  networkSupported () {
+    return !!config.contracts.collections.address[this.getNetwork()]
+  }
+
+  explorerLink (type, address) {
+    const network = this.getNetwork()
+    // if (network === 'localhost') { return `#${type}/${address}` }
+
+    const subdomain = (network !== 'mainnet') ? network + '.' : ''
+    return `https://${subdomain}etherscan.io/${type}/${address}`
   }
 }()

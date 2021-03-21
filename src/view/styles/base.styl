@@ -11,12 +11,28 @@ html, body {
   & * {
     user-select none
     box-sizing border-box
+    user-drag: none;
   }
+
+  // https://gist.github.com/msuchodolski/41c9338f3a732379dc570142826ed76e
+  *, *::after, *::before {
+    app-region: no-drag; user-select: text; user-drag: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-app-region: no-drag;
+  }
+
+  p, p * { user-select: text; user-drag: none; }
 }
 
 a {
   tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+
+  color #4b61cc
+  &:visited {
+    color #273265
+  }
 }
 
 

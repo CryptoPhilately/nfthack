@@ -1,0 +1,168 @@
+
+
+.collection-info, .stamp-info {
+    position relative
+    margin:40px 0 40px 0;
+    background #fff;
+    padding:20px 50px 140px 20px;
+    border-radius 10px
+
+    h1 {
+      text-align left
+      font-weight 200
+      font-size 22px
+      padding 0px 0 20px 12px
+      margin:0;
+      .status {
+        position: relative
+        top: -2px
+      }
+    }
+
+    p {
+      margin:10px 12px
+
+      b {
+        font-weight 200
+      }
+    }
+
+
+    #mint_progress {
+      display block
+      position absolute
+      left 40px
+      bottom 35px
+      width calc(100% - 280px)
+      text-align right
+    }
+
+    button.deposit-collection,
+    button.mint-collection {
+      position absolute
+      bottom: 40px
+      right 40px
+      display: inline-block
+      border:none; outline:none;
+      text-decoration none
+      color: #fff;
+      cursor: pointer;
+      border-radius: 5px;
+      background: #f89c36;
+      letter-spacing: 1px;
+      text-transform: uppercase
+      font-size: 14px;
+      font-weight: 500;
+      font-style: normal;
+      padding:7px 12px;
+      &:hover {
+        opacity: 0.95;
+      }
+      push-btn()
+    }
+
+    button.deposit-collection {
+      bottom:auto; top:20px; right:20px;
+    }
+}
+
+.collection-info .stamps-list {
+    overflow-x: auto;
+    position relative
+    margin:40px 0 40px 0;
+    background #fff;
+    padding:20px 20px 30px 0px;
+    border-radius 10px
+
+    a.uri {
+      font-size 12px
+      display block
+      width 60px
+      overflow hidden
+      text-overflow ellipsis
+    }
+
+    table {
+      border-collapse collapse
+      width 100%
+      caption {
+        text-align left
+        font-weight 200
+        font-size 18px
+        padding 0px 0 20px 12px
+      }
+      th {
+        text-transform uppercase
+        font-weight 200
+        font-size 12px
+      }
+      th,td {
+        text-align left
+        padding:10px 15px;
+        vertical-align top
+      }
+      td.empty {
+        text-align center
+        padding 50px 30px
+      }
+
+      tbody tr.item:hover td {
+        background rgba(138, 194, 255, 0.1)
+      }
+
+      tfoot th {
+        text-align right
+      }
+    }
+}
+
+
+.stamp-info {
+  padding-bottom 100px
+  .image {
+    width: 200px;
+    height: auto;
+    float right
+    margin 0 -10px 0 10px
+  }
+
+  #deposit_progress, #detach_progress {
+    display block
+    position absolute
+    left 40px
+    bottom 35px
+    width calc(100% - 280px)
+    text-align right
+  }
+  #detach_progress {
+    width calc(100% - 350px)
+  }
+
+
+  button {
+    &.loading {
+      pointer-events none
+      filter:grayscale(1)
+    }
+    position absolute
+    bottom: 40px
+    right 40px
+    display: inline-block
+    border:none; outline:none;
+    text-decoration none
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    background: #f89c36;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    font-size: 14px;
+    font-weight: 500;
+    font-style: normal;
+    padding:7px 12px;
+    &:hover {
+      opacity: 0.95;
+    }
+    push-btn()
+  }
+}

@@ -1,6 +1,45 @@
+
+i.status {
+  font-weight bold
+  background #aaa
+  color #fff
+  font-style normal
+  font-size 12px
+  letter-spacing 0.4px
+  display inline-block
+  padding 2px 4px
+  border-radius 3px
+
+  &.ipfs {
+    background-color #7d7de6
+  }
+  &.minted {
+    background-color #f89c36
+  }
+  &.deposited {
+    background-color #fb6161
+  }
+  &.detached {
+    background-color #564242
+  }
+}
+
+a.uri {
+  font-size 12px
+  display block
+  width 60px
+  overflow hidden
+  text-overflow ellipsis
+}
+
+
 stamps-list {
   display block
 
+  p.fetching {
+    text-align center
+    margin 100px auto
+  }
 
   .groups-list, .stamps-list {
     overflow-x: auto;
@@ -13,6 +52,7 @@ stamps-list {
     table {
       border-collapse collapse
       width 100%
+
       caption {
         text-align left
         font-weight 200
@@ -24,11 +64,27 @@ stamps-list {
         font-weight 200
         font-size 12px
       }
-      th,td {
+      th, td {
         text-align left
         padding:10px 15px;
-        vertical-align top
+        // vertical-align top
       }
+
+      td {
+        vertical-align center
+      }
+
+      td.image {
+        img {
+          margin 0 auto
+          width: 70px
+          height : 50px
+          object-fit: cover
+          border-radius 5px
+          overflow hidden
+        }
+      }
+
       td.empty {
         text-align center
         padding 50px 30px
@@ -68,13 +124,3 @@ stamps-list {
   }
 }
 
-.stamps-list {
-  a.uri {
-    font-size 12px
-    display block
-    width 60px
-    overflow hidden
-    text-overflow ellipsis
-  }
-
-}

@@ -1,5 +1,6 @@
 
 import User from '../../model/User'
+import Router from '@view/Router'
 
 customElements.define('log-in', class extends HTMLElement {
   async connectedCallback () {
@@ -19,14 +20,19 @@ customElements.define('log-in', class extends HTMLElement {
     User.on('address:changed', address => {
       if (!address) { return }
       const network = User.getNetwork()
-      const subdomain = (network !== 'mainnet') ? network + '.' : ''
       const showAddress = address.substr(0, 6) + '...' + address.substr(-4)
       this.innerHTML = `<div class="userblock">
-        <a href="https://${subdomain}etherscan.io/address/${address}"
+        <a href="${User.explorerLink('address', address)}"
           target="_blank"
           title="${address} in ${network} network"
           class="address"><b>${network}</b>: ${showAddress}</a>
       </div>`
+
+      if (User.networkSupported() && !window.location.pathname.includes('/stamps')) {
+        Router.navigateTo('/stamps')
+      } else {
+        Router.navigateTo('/')
+      }
     })
   }
 })
